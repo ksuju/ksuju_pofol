@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ksuju.www.repository.MemberRepository">
+	
+	<!-- reg_member_seq로 member_id 가져오기 (member)-->
+	<select id="selectMemberId" parameterType="int">
+		SELECT member_id
+		FROM member
+		WHERE member_seq = #{regMemberSeq}
+	</select>
+	
+	<!-- 계정인증여부 가져오는 쿼리 (member)-->
+	<select id="getAuthYN">
+		SELECT m.auth_yn
+		FROM member m
+		where m.member_id = #{memberID}
+	</select>
+	
+	<!-- memberID로 email 가져오기 -->
+	<select id="getEmail">
+		SELECT email
+		FROM member
+		WHERE member_id = #{memberID}
+	</select>
+	
+</mapper>

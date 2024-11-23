@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+    <section class="pass_recover_area section--padding2">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 offset-lg-3">
+                    <form action="<c:url value='/auth/sendID.do'/>" method="POST">
+                        <div class="cardify recover_pass">
+                            <div class="login--header">
+                                <div th:if="${alert != null and alert != ''}">
+                                    <h5 style="color: red; text-align:center;" th:text="${alert}"></h5>
+                                </div>
+
+                                <div th:if="${findID != null and findID != ''}">
+                                    <p>귀하의 아이디는</p>
+                                    <h2 th:text="${findID} + '입니다.'"></h2>
+                                </div>
+                            </div>
+                            <!-- end .login_header -->
+                        </div>
+                        <!-- end .cardify -->
+                    </form>
+                </div>
+                <!-- end .col-md-6 -->
+            </div>
+            <!-- end .row -->
+        </div>
+        <!-- end .container -->
+    </section>
+</th:block>
+</html>

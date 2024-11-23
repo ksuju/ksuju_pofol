@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- viewport meta -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MartPlace - Complete Online Multipurpose Marketplace HTML Template">
+    <meta name="keywords" content="marketplace, easy digital download, digital product, digital, html5">
+
+    <title>ksuju's portfolio</title>
+
+    <!-- inject:css -->
+    <link rel="stylesheet" th:href="@{/assest/template/css/animate.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/fontello.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/jquery-ui.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/lnr-icon.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/owl.carousel.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/slick.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/trumbowyg.min.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/bootstrap/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assest/template/css/style.css}">
+    <!-- endinject -->
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="16x16" th:href="@{/assest/template/images/favicon.png}">
+
+    <script type="text/javascript">
+        var ctx = '[${pageContext.request.contextPath}]';
+    </script>
+    <script th:src="@{/assest/js/page.js}"></script>
+</head>
+<th:block th:replace="~{/layout/fragments/menu :: headerLayout}"></th:block>
+<body class="preload home1 mutlti-vendor">
+
+<!-- 본문 내용 -->
+<th:block layout:fragment="content"></th:block>
+
+<!--//////////////////// JS GOES HERE ////////////////-->
+
+<!-- inject:js -->
+<script th:src="@{/assest/template/js/vendor/jquery/jquery-1.12.3.js}"></script>
+<script th:src="@{/assest/template/js/vendor/jquery/popper.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/jquery/uikit.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/bootstrap.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/chart.bundle.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/grid.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/jquery-ui.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/jquery.barrating.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/jquery.countdown.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/jquery.counterup.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/jquery.easing1.3.js}"></script>
+<script th:src="@{/assest/template/js/vendor/owl.carousel.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/slick.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/tether.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/trumbowyg.min.js}"></script>
+<script th:src="@{/assest/template/js/vendor/waypoints.min.js}"></script>
+<script th:src="@{/assest/template/js/dashboard.js}"></script>
+<script th:src="@{/assest/template/js/main.js}"></script>
+<script th:src="@{/assest/template/js/map.js}"></script>
+<!-- endinject -->
+</body>
+<th:block th:replace="~{/layout/fragments/footer :: footerLayout}"></th:block>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ksuju.www.repository.ResumeRepository">
+	
+	<!-- 이력서 가져오기 이용기록 -->
+	<insert id="resumeRec">
+		INSERT INTO resume_rec
+		(name, email)
+		VALUES(#{name}, #{email});
+	</insert>
+	
+	<!-- 이력서 가져오기 -->
+	<select id="resume" resultType="ResumeDto">
+		SELECT * FROM resume
+	</select>
+</mapper>

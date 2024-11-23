@@ -1,0 +1,72 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.5'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.ksuju'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// Spring Web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// thymeleaf
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+	// Mybatis and MySQL
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+	implementation 'mysql:mysql-connector-java:8.0.32'
+
+	// Spring WebSocket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// Lombok
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+	// File Upload
+	implementation 'commons-io:commons-io:2.16.1'
+	implementation 'commons-fileupload:commons-fileupload:1.5'
+
+	// Jasypt for Encryption
+	implementation 'org.jasypt:jasypt-spring31:1.9.3'
+
+	// BCrypt for Password Encoding
+	implementation 'at.favre.lib:bcrypt:0.10.2'
+
+	// JUnit for Testing
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+
+	// Spring Boot Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Java Mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	// file upload
+	implementation 'commons-io:commons-io:2.16.1'
+	implementation 'commons-fileupload:commons-fileupload:1.5'
+}
+
+processResources {
+	from("src/main/resources") {
+		into "target/classes"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ksuju.www.repository.AuthRepository">
+	
+	<!-- id찾기 (auth)-->
+	<select id="findID">
+		SELECT member_id
+		FROM member
+		WHERE member_nm = #{name} AND email = #{email};
+	</select>
+	
+	<!-- 인증상태 N > Y로 변경 (auth)-->
+	<update id="updateMAuth">
+		UPDATE member
+		SET auth_yn = 'Y'
+		WHERE member_id =
+		#{memberID};
+	</update>
+
+	<!-- 인증상태 N > Y로 변경 (auth)-->
+	<update id="updateAuthaa">
+		UPDATE member_auth
+		SET auth_yn = 'Y'
+		WHERE member_seq =
+		#{memberSeq};
+	</update>
+	
+	<!-- auth_num 조회 쿼리 (auth)-->
+	<select id="authNumSelect">
+		SELECT ma.auth_num FROM member_auth ma
+		JOIN member m
+		ON ma.member_seq = m.member_seq
+		WHERE m.email = #{email};
+	</select>
+
+	<!-- auth_num 삭제 쿼리 (auth)-->
+	<update id="updateAuthNumToNull">
+		UPDATE member_auth ma
+		JOIN member m ON ma.member_seq =
+		m.member_seq
+		SET ma.auth_num = NULL
+		WHERE m.email = #{email};
+	</update>
+	
+	<!-- auth_num 업데이트 쿼리 (auth)-->
+	<update id="updateAuthNum">
+		UPDATE member_auth ma
+		JOIN member m ON ma.member_seq =
+		m.member_seq
+		SET ma.auth_num = #{authNum}, ma.expire_dtm =
+		DATE_ADD(NOW(), INTERVAL 30
+		MINUTE)
+		WHERE m.email = #{email};
+	</update>
+	
+	<!-- 만료시간 가져오는 쿼리(auth)-->
+	<select id="getExpireDtm">
+		SELECT ma.expire_dtm FROM member_auth ma
+		JOIN member m
+		ON ma.member_seq = m.member_seq
+		WHERE m.email = #{email} ;
+	</select>
+
+	<!-- email로 member_id 가져오기 (비밀번호 변경 시 사용) -->
+	<select id="compareID">
+		SELECT member_id
+		FROM member
+		WHERE email = #{email};
+	</select>
+</mapper>

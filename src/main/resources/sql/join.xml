@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ksuju.www.repository.JoinRepository">
+	
+	<!-- 인증상태 N > Y로 변경 (join)-->
+	<update id="updateMemAuth">
+		UPDATE member
+		SET auth_yn = 'Y'
+		WHERE member_seq =
+		#{memberSeq};
+	</update>
+
+	<!-- 인증상태 N > Y로 변경 (join)-->
+	<update id="updateAuth">
+		UPDATE member_auth
+		SET auth_yn = 'Y'
+		WHERE member_seq =
+		#{memberSeq} AND auth_uri = #{authUri};
+	</update>
+	
+	<!-- auth_uri 가져오기 > 현재시간에서 30분 전까지만 가져옴 (join)-->
+	<select id="authURI">
+		SELECT auth_uri, member_seq
+		FROM member_auth ma
+		WHERE
+		reg_dtm >= DATE_SUB(NOW(), INTERVAL 30 MINUTE);
+	</select>
+	
+	<!-- 멤버 authinfo 추가 (join)-->
+	<insert id="addAuthInfo" parameterType="memberAuthDto">
+		INSERT INTO
+		forum.member_auth
+		(member_seq, auth_num, auth_uri, reg_dtm, expire_dtm,
+		auth_yn)
+		VALUES (#{memberSeq}, '', #{authUri}, DATE_FORMAT(NOW(),
+		'%Y%m%d%H%i%s'),
+		#{expireDtm}, 'N')
+	</insert>
+	
+	<!-- memberSeq 가져오기 (join)-->
+	<select id="getMemberSeq" parameterType="string"
+		resultType="int">
+		SELECT member_seq
+		FROM member
+		WHERE member_id = #{memberID};
+	</select>
+	
+	<!-- 아이디삭제 (join)-->
+	<delete id="deleteMember">
+		DELETE FROM member WHERE member_seq = #{memberSeq};
+	</delete>
+	
+	<!-- 회원가입 (join)-->
+	<insert id="joinMember" parameterType="hashmap">
+		INSERT INTO forum.`member`
+		(member_id, passwd, member_nm, email, auth_yn,
+		pwd_chng_dtm, join_dtm)
+		VALUES(#{memberID}, #{passwd}, #{memberNM}, #{email}, 'N', '', now());
+	</insert>
+
+	<!-- 아이디 중복검사 (join)-->
+	<select id="memberSelectAll">
+		SELECT member_id FROM `member` m
+	</select>
+	
+	<!-- email 셀렉트 (join)-->
+	<select id="emailCount">
+		SELECT count(*)
+		FROM `member` m
+		WHERE email = #{email};
+	</select>
+</mapper>

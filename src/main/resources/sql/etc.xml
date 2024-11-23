@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ksuju.www.repository.EtcRepository">
+	
+	<!-- 카테고리별 식사메뉴 가져오기 -->
+	<select id="menu" resultType="String">
+		SELECT menu_name
+		FROM recommend_menu
+		WHERE menu_category = #{category};
+	</select>
+	
+	<!-- 식사메뉴 카테고리 가져오기 -->	
+	<select id="menuCategory" resultType="String">
+		SELECT menu_category
+		FROM recommend_menu
+		GROUP BY menu_category;
+	</select>
+	
+	<!-- 모든 식사메뉴 가져오기 -->
+	<select id="allMenu" resultType="String">
+		SELECT menu_name
+		FROM recommend_menu
+		WHERE NOT menu_name IN ('아무거나');
+	</select>
+</mapper>

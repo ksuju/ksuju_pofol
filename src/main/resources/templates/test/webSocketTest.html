@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test</title>
+    <script>
+        // WebSocket 연결 생성
+        //let socket = new WebSocket('ws://localhost:8080/chat');
+        let socket = new WebSocket('ws://localhost:8080/chat');
+
+        // 연결 성공 시
+        socket.onopen = function(event) {
+            console.log("웹소켓 연결 성공!");
+            socket.send("안녕하세요, 서버!");
+        };
+
+        // 서버로부터 메시지를 받았을 때
+        socket.onmessage = function(event) {
+            console.log("서버로부터 메시지: ", event.data);
+        };
+
+        // 연결 종료 시
+        socket.onclose = function(event) {
+            console.log("웹소켓 연결 종료");
+        };
+
+        // 에러 발생 시
+        socket.onerror = function(error) {
+            // error 객체 자체를 콘솔에 출력
+            console.error("웹소켓 에러 발생:", error);
+            
+            // 에러의 type과 message 출력 (error 객체의 속성 확인)
+            console.error("Error type:", error.type);
+            console.error("Error message:", error.message);
+            
+            // 추가적으로, error가 Event 객체일 경우
+            if (error instanceof Event) {
+                console.error("Error event type:", error.type);
+                console.error("Error event message:", error.target);
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1>WebSocket Test Page</h1>
+</body>
+</html>

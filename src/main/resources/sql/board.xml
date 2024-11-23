@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ksuju.www.repository.BoardRepository">
+	
+	<!-- 첨부파일 크기 제한에러 발생시 작성중이던 정보 가져오기 한개! -->
+	<select id="getSave" resultType="HashMap">
+		SELECT
+			b.title, b.content, b.board_seq
+		FROM
+			board b
+		WHERE
+			b.reg_member_seq = #{memberSeq}
+		AND
+			b.board_type_seq = #{boardTypeSeq}
+		ORDER BY
+			b.board_seq DESC
+		LIMIT 1
+	</select>
+	
+	
+	<!-- 인기글 상위 5개 출력 (notice)-->
+	<select id="getLikeTopFive" resultType="map">
+		SELECT
+			b.board_seq, b.board_type_seq, b.title , COUNT(*) AS like_count
+		FROM
+			board b
+		JOIN
+			board_like_dislike bld
+		ON
+			b.board_seq = bld.board_seq
+		WHERE
+			bld.is_like = 'Y'
+		AND
+			b.board_type_seq = #{boardTypeSeq}
+		GROUP BY
+			b.title
+		ORDER BY
+			like_count DESC
+		LIMIT 5;
+	</select>
+	
+	<!-- 게시글의 파일 개수, 댓글 개수, 좋아요 여부를 포함한 통합 쿼리 (notice)-->
+	<select id="getBoardDetails" parameterType="map" resultType="map">
+	    SELECT 
+	        b.board_seq AS boardSeq,
+	        COALESCE(f.fileCount, 0) AS fileCount,
+	        COALESCE(c.commentCount, 0) AS commentCount,
+	        COALESCE(l.isLikeCount, 0) AS isLike
+	    FROM 
+	        board b
+	    LEFT JOIN (
+	        SELECT board_seq, COUNT(*) AS fileCount
+	        FROM board_attach
+	        WHERE board_seq IN
+	        <foreach item="boardSeq" collection="boardSeqs" open="(" separator="," close=")">
+	            #{boardSeq}
+	        </foreach>
+	        AND board_type_seq = #{boardTypeSeq}
+	        GROUP BY board_seq
+	    ) f ON b.board_seq = f.board_seq
+	    LEFT JOIN (
+	        SELECT board_seq, COUNT(*) AS commentCount
+	        FROM board_comment
+	        WHERE board_seq IN
+	        <foreach item="boardSeq" collection="boardSeqs" open="(" separator="," close=")">
+	            #{boardSeq}
+	        </foreach>
+	        AND board_type_seq = #{boardTypeSeq}
+	        GROUP BY board_seq
+	    ) c ON b.board_seq = c.board_seq
+	    LEFT JOIN (
+	        SELECT board_seq, COUNT(*) AS isLikeCount
+	        FROM board_like_dislike
+	        WHERE is_like = 'Y'
+	        AND board_seq IN
+	        <foreach item="boardSeq" collection="boardSeqs" open="(" separator="," close=")">
+	            #{boardSeq}
+	        </foreach>
+	        AND board_type_seq = #{boardTypeSeq}
+	        GROUP BY board_seq
+	    ) l ON b.board_seq = l.board_seq
+	    WHERE b.board_seq IN
+	    <foreach item="boardSeq" collection="boardSeqs" open="(" separator="," close=")">
+	        #{boardSeq}
+	    </foreach>
+	    AND b.board_type_seq = #{boardTypeSeq};
+	</select>
+
+	<!-- 좋아요 수 체크 (notice)-->
+	<select id="like">
+		SELECT COUNT(is_like)
+		FROM board_like_dislike
+		WHERE is_like = 'Y'
+		AND board_seq = #{boardSeq}
+		AND board_type_seq = #{bdTypeSeq};
+	</select>
+	
+	<!-- 여러 개의 boardSeq에 대한 is_like 값 가져오기 (notice)-->
+	<select id="selectIsLikeList" parameterType="map" resultType="map">
+	    SELECT board_seq AS boardSeq, is_like AS isLike
+	    FROM board_like_dislike
+	    WHERE member_seq = #{memberSeq}
+	    AND board_seq IN
+	    <foreach item="boardSeq" collection="boardSeqs" open="(" separator="," close=")">
+	        #{boardSeq}
+	    </foreach>
+	    AND board_type_seq = #{boardTypeSeq}
+	</select>
+	
+	<!-- 첨부파일 개수 가져오기 (여러 boardSeq) (notice)-->
+	<select id="bringFileCnt" parameterType="map" resultType="map">
+	    SELECT board_seq AS boardSeq, COUNT(*) AS fileCount
+	    FROM board_attach
+	    WHERE board_seq IN
+	    <foreach item="boardSeq" collection="boardSeqs" open="(" separator="," close=")">
+	        #{boardSeq}
+	    </foreach>
+	    AND board_type_seq = #{boardTypeSeq}
+	    GROUP BY board_seq;
+	</select>
+	
+
+	
+	<!-- is_like 'Y' or 'N' 가져오기 (notice)-->
+	<select id="selectIsLike">
+		SELECT is_like
+		FROM board_like_dislike
+		WHERE member_seq = #{memberSeq}
+		AND board_seq = #{boardSeq}
+		AND board_type_seq = #{boardTypeSeq};
+	</select>
+	
+	<!-- 게시글 좋아요 Y or N (notice)-->
+	<update id="thumbUpDownCvt">
+		UPDATE board_like_dislike
+		SET reg_dtm = DATE_FORMAT(NOW(), '%Y-%m-%d'), is_like = #{isLike}
+		WHERE board_seq = #{boardSeq} AND board_type_seq = #{boardTypeSeq} AND member_seq = #{memberSeq};
+	</update>
+	
+	<!-- 게시글 좋아요 (notice)-->
+	<insert id="thumbUpDown" parameterType="BoardLikeDto">
+		INSERT INTO board_like_dislike
+		(board_seq, board_type_seq, reg_dtm, is_like, member_seq)
+		VALUES(#{boardSeq}, #{boardTypeSeq}, DATE_FORMAT(NOW(), '%Y-%m-%d'), #{isLike}, #{memberSeq});
+	</insert>
+	
+
+	
+	<!-- 수정페이지 파일 개별 삭제 (notice)-->
+	<delete id="deleteFile">
+		DELETE FROM board_attach
+		WHERE attach_seq=#{attachSeq} AND board_seq=#{boardSeq} AND board_type_seq=#{boardTypeSeq};
+	</delete>
+
+	<!-- attach_seq로 첨부파일 정보 가져오기 (notice)-->
+	<select id="getAttachInfo" resultType="BoardAttachDto">
+		SELECT * FROM board_attach
+		WHERE attach_seq = #{attachSeq}
+	</select>
+
+	<!-- 게시글에 저정된 첨부파일 정보 모두 가져오기 (notice)-->
+	<select id="selectAllFile" resultType="BoardAttachDto">
+		SELECT * FROM board_attach
+		WHERE board_seq = #{boardSeq}
+		AND
+		board_type_seq = #{boardTypeSeq};
+	</select>
+
+	<!-- 게시글에 있는 첨부된 파일 전체삭제 (notice)-->
+	<delete id="deleteBoardAttach">
+		DELETE FROM board_attach
+		WHERE board_seq=#{boardSeq}
+		AND board_type_seq=#{boardTypeSeq};
+	</delete>
+
+	<!-- 파일첨부 > boardAttach insert (notice)-->
+	<insert id="insertBoardAttach" parameterType="BoardAttachDto">
+		<selectKey keyProperty="attachSeq" order="AFTER"
+			resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID() AS attachSeq
+		</selectKey>
+		INSERT INTO
+		board_attach
+		(board_seq, board_type_seq, org_file_nm,
+		save_path,
+		chng_file_nm, file_size,
+		file_type, access_uri, reg_dtm)
+		VALUES(#{boardSeq}, #{boardTypeSeq}, #{orgFileNm}, #{savePath},
+		#{chngFileNm}, #{fileSize}, #{fileType}, #{accessUri}, #{regDtm});
+	</insert>
+
+	<!-- 게시글 수정 (notice)-->
+	<update id="updateBoard" parameterType="HashMap">
+		UPDATE forum.board
+		SET
+		title = #{title}, content = #{trumbowyg-demo}, reg_dtm = #{now},
+		update_dtm = #{now}, update_member_seq = #{memberSeq}
+		WHERE board_seq =
+		#{boardSeq} AND board_type_seq = #{boardTypeSeq};
+	</update>
+
+	<!-- 특정 게시글 가져오기 (notice)-->
+	<select id="selectBoard" resultType="HashMap">
+		SELECT b.title, b.content,
+		reg_dtm, reg_member_seq
+		FROM board b
+		WHERE b.board_seq = #{boardSeq} AND
+		b.board_type_seq = #{boardTypeSeq};
+	</select>
+
+	<!-- 게시글 생성 (notice)-->
+	<insert id="boardCreate">
+		INSERT INTO forum.board
+		(board_type_seq, title,
+		content, del_yn,
+		reg_dtm, reg_member_seq, update_dtm,
+		update_member_seq)
+		VALUES(#{boardTypeSeq}, #{title}, #{trumbowyg-demo}, 'N',
+		#{now},
+		#{memberSeq}, #{now}, 0);
+
+		<!-- 자동 생성된 키를 selectKey를 통해 가져옴 -->
+		<selectKey keyProperty="boardSeq" keyColumn="board_seq"
+			order="AFTER" resultType="int">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+
+	<!-- 게시글 삭제 (notice)-->
+	<delete id="boardDelete">
+		DELETE b FROM
+		board b
+		JOIN member m ON b.reg_member_seq
+		= m.member_seq
+		WHERE
+		m.member_id = #{memberId} AND b.board_type_seq =
+		#{boardTypeSeq} AND b.board_seq
+		= #{boardSeq};
+	</delete>
+	
+	<!-- 게시글 getSeq 가져오기 (notice)-->
+	<select id="getSeq" parameterType="map" resultType="int">
+		SELECT
+			b.board_seq
+		FROM
+			board b
+		JOIN
+			board_type bt ON
+			bt.board_type_seq = b.board_type_seq
+		JOIN
+			member m ON m.member_seq =
+			b.reg_member_seq
+		WHERE
+			b.board_type_seq = #{bdTypeSeq}
+		ORDER BY
+			b.board_seq DESC
+		LIMIT
+			#{start}, #{size};
+	</select>
+
+	<!-- 게시글 리스트 가져오기 (notice)-->
+	<select id="getList" parameterType="map" resultType="BoardDto">
+		SELECT
+			b.board_seq,
+			b.board_type_seq,
+			b.title,
+			b.content,
+			b.hit,
+			b.del_yn,
+			b.reg_dtm,
+			b.reg_member_seq,
+			m.member_id,
+			b.update_dtm,
+			b.update_member_seq,
+			bt.board_type_nm
+		FROM
+			board b
+		JOIN
+			board_type bt ON
+			bt.board_type_seq = b.board_type_seq
+		JOIN
+			member m ON m.member_seq =
+			b.reg_member_seq
+		WHERE
+			b.board_type_seq = #{bdTypeSeq}
+		ORDER BY
+			b.board_seq DESC
+		LIMIT
+			#{start}, #{size};
+	</select>
+
+	<!-- 게시글 총 개수 가져오기 (notice)-->
+	<select id="totalCnt">
+		select count(*)
+		from board
+		where board_type_seq =
+		#{bdTypeSeq};
+	</select>
+	
+	
+</mapper>

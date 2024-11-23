@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ksuju.www.repository.CommentRepository">
+	
+	<!-- 댓글 전부 삭제하기 (notice)-->
+	<delete id="deleteAllComment">
+		DELETE FROM board_comment
+		WHERE board_type_seq = #{boardTypeSeq}
+			AND board_seq = #{boardSeq};
+	</delete>
+	
+	<!-- 댓글 삭제하기 (notice)-->
+	<delete id="deleteComment">
+		DELETE FROM board_comment
+		WHERE comment_seq = #{commentSeq}
+			AND board_seq = #{boardSeq}
+			AND board_type_seq = #{boardTypeSeq};
+	</delete>
+	
+	<!-- 댓글 수정하기 (notice)-->
+	<update id="updateComments">
+		UPDATE board_comment
+		SET content = #{content}, update_dtm = DATE_FORMAT(NOW(), '%Y-%m-%d')
+		WHERE comment_seq = #{commentSeq}
+			AND board_seq = #{boardSeq}
+			AND board_type_seq = #{boardTypeSeq};
+	</update>
+	
+	<!-- 댓글 가져오기 (notice)-->
+	<select id="selectComments">
+		SELECT *
+		FROM board_comment
+		WHERE board_seq = #{boardSeq} AND board_type_seq = #{boardTypeSeq};
+	</select>
+	
+	<!-- 댓글 insert (notice)-->
+	<insert id="insertComment" parameterType="BoardCommentDto">
+	    INSERT INTO forum.board_comment
+	    (lvl, content, board_seq, board_type_seq, member_seq, parent_comment_seq, reg_dtm)
+	    VALUES
+	    (#{lvl}, #{content}, #{boardSeq}, #{boardTypeSeq}, #{memberSeq}, #{parentCommentSeq}, DATE_FORMAT(NOW(), '%Y-%m-%d'))
+	</insert>
+	
+		<!-- 댓글 개수 가져오기 (여러 boardSeq) (notice)-->
+	<select id="bringCmtCnt" parameterType="map" resultType="map">
+	    SELECT board_seq AS boardSeq, COUNT(*) AS commentCount
+	    FROM board_comment
+	    WHERE board_seq IN
+	    <foreach item="boardSeq" collection="boardSeqs" open="(" separator="," close=")">
+	        #{boardSeq}
+	    </foreach>
+	    AND board_type_seq = #{boardTypeSeq}
+	    GROUP BY board_seq;
+	</select>
+	
+	<!-- 댓글 is_like 'Y' or 'N' 가져오기 (notice)-->
+	<select id="commentIsLike">
+	    SELECT is_like, comment_seq 
+	    FROM comment_like_dislike
+	    WHERE member_seq = #{memberSeq}
+	    AND board_seq = #{boardSeq}
+	    AND board_type_seq = #{boardTypeSeq};
+	</select>
+	
+	<!-- 댓글 좋아요 Y or N (notice)-->
+	<update id="commentUpDownCvt">
+	    UPDATE comment_like_dislike
+	    SET reg_dtm = DATE_FORMAT(NOW(), '%Y-%m-%d'), is_like = #{cmtIsLike}
+	    WHERE board_seq = #{boardSeq} AND board_type_seq = #{boardTypeSeq} AND member_seq = #{memberSeq} AND comment_seq = #{commentSeq};
+	</update>
+	
+	<!-- 댓글 좋아요 (notice)-->
+	<insert id="commentUpDown">
+		INSERT INTO comment_like_dislike
+		(board_seq, board_type_seq, reg_dtm, is_like, member_seq, comment_seq)
+		VALUES(#{boardSeq}, #{boardTypeSeq}, DATE_FORMAT(NOW(), '%Y-%m-%d'), #{cmtIsLike}, #{memberSeq}, #{commentSeq});
+	</insert>
+	
+
+</mapper>

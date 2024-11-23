@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Profile</title>
+
+    <link rel="stylesheet" th:href="@{/assest/template/css/trumbowyg.min.css}">
+    <script th:src="@{/assest/template/js/vendor/jquery/jquery-1.12.3.js}"></script>
+    <script th:src="@{/assest/template/js/vendor/trumbowyg.min.js}"></script>
+    <script th:src="@{/assest/template/js/vendor/trumbowyg/ko.js}"></script>
+
+    <style>
+        .feature__img img {
+            width: 112px;
+            height: 140px;
+        }
+
+        .content_01 {
+            display: inline-block;
+            text-align: left !important;
+            width: 70%;
+        }
+
+        .content_02 {
+            display: inline-block;
+            text-align: left !important;
+        }
+
+        .content_02 p {
+            margin-top: 15px;
+        }
+
+        #introduction {
+            flex: 0 0 66.666666% !important;
+            width: 66.666666% !important;
+            max-width: 66.666666% !important;
+        }
+
+        .post-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px;
+        }
+
+        .post-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 230px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .post-title {
+            font-size: 1.1em;
+            color: #333;
+            margin: 0 0 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .post-excerpt {
+            margin: 10px 0;
+            font-size: 0.95em;
+            line-height: 1.4em;
+            max-height: 2.8em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+        }
+
+        .post-meta {
+            font-size: 0.9em;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        .read-more {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            align-self: flex-end;
+            margin: 0 auto;
+        }
+
+        .read-more:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+<section class="features section--padding">
+    <!-- start container -->
+    <div class="container">
+        <li>웹소켓 테스트
+            <ul>
+                <li><a href="/basic/webSocketTest">테스트 페이지</a></li>
+            </ul>
+        </li>
+        <!-- start row -->
+        <div class="row">
+            <!-- start search-area -->
+            <div class="col-lg-4 col-md-6">
+                <div class="feature">
+                    <div class="feature__img">
+                        <img alt="feature" th:src="@{/assest/template/images/ksuju.jpg}"/>
+                    </div>
+                    <div class="feature__title">
+                        <h3>프로필 / Profile</h3>
+                    </div>
+                    <div class="feature__desc">
+                        <div class="content_01">
+                            <p>이름 : 강성준</p>
+                            <p>생년월일 : 1995-07-22</p>
+                            <p>전화번호 : 010-4172-8036</p>
+                            <p>이메일 : kyd547@naver.com</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- end /.feature -->
+
+                <div class="feature">
+                    <div class="feature__title">
+                        <h3>기술 / Skill</h3>
+                    </div>
+                    <div class="feature__desc">
+                        <div class="content_01">
+                            <p>백엔드 : JAVA, Spring</p>
+                            <p>프론트엔드 : HTML, CSS, JavaScript, JSP</p>
+                            <p>데이터베이스 : MySQL, MyBatis</p>
+                            <p>클라우드 : AWS(EC2, RDS)</p>
+                            <p>서버 : Nginx</p>
+                            <p>기타 : Git, GitHub</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end /.col-lg-4 col-md-6 -->
+
+            <!-- start introduction -->
+            <div class="col-lg-4 col-md-6" id="introduction">
+                <div class="feature">
+                    <div class="feature__title">
+                        <h3>Ksuju 최신 포스트</h3>
+                    </div>
+                    <div class="feature__desc">
+                        <div class="post-container">
+                            <!-- Ksuju 최신 포스트 -->
+                            <th:block th:each="item, stat : ${rssItems}">
+                                <th:block th:if="${stat.index < 6}">
+                                    <div class="post-card">
+                                        <h3 class="post-title">
+                                            <a target="_blank" th:href="${item.link}" th:text="${item.title}"></a>
+                                        </h3>
+                                        <p class="post-meta">
+                                            <span th:text="${item.category}"></span> /
+                                            <span th:text="${item.pubDate}"></span>
+                                        </p>
+                                        <p class="post-excerpt" th:text="${item.description}"></p>
+                                        <a class="read-more" target="_blank" th:href="${item.link}">자세히 보기</a>
+                                    </div>
+                                </th:block>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+                <!-- end /.feature -->
+            </div>
+            <!-- end /.col-lg-4 col-md-6 -->
+        </div>
+        <!-- end /.row -->
+    </div>
+    <!-- end /.container -->
+</section>
+
+<script type="text/javascript">
+    $('#trumbowyg-demo').trumbowyg({
+        lang: 'kr'
+    });
+
+    $(document).ready(function () {
+        var alertMessage = /*[[${alert}]]*/ "";
+        if (alertMessage && alertMessage.trim().length > 0) {
+            alert(alertMessage);
+        }
+    });
+</script>
+</body>
+</th:block>
+</html>
