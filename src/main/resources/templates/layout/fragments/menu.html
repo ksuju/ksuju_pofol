@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<th:block th:fragment="headerLayout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+</head>
+<body>
+<!-- ================================ START MENU AREA ================================== -->
+<div class="menu-area">
+    <div class="top-menu-area" style="background-color:white;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-6 v_middle">
+                    <div class="logo">
+                        <a th:href="@{/pf/index.do}">
+                            <img th:src="@{/assest/template/images/ksujulogo.png}" style="height:80px" alt="logo image" class="img-fluid"/>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-8 offset-lg-1 col-6 col-md-9 v_middle">
+                    <div class="author-area not_logged_in">
+                        <div class="author__notification_area">
+                            <ul>
+                                <li class="has_dropdown">
+                                    <div class="dropdowns dropdown--cart">
+                                        <div class="cart_area">
+                                            <div class="cart_product">
+                                                <div class="product__info">
+                                                    <div class="thumbn">
+                                                        <img th:src="@{/assest/template/images/capro1.jpg}" alt="cart product thumbnail"/>
+                                                    </div>
+                                                    <div class="info">
+                                                        <a class="title" href="single-product.html">Finance and Consulting Business Theme</a>
+                                                        <div class="cat">
+                                                            <a href="#">
+                                                                <img th:src="@{/assest/template/images/catword.png}" alt=""/>Wordpress
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="product__action">
+                                                    <a href="#">
+                                                        <span class="lnr lnr-trash"></span>
+                                                    </a>
+                                                    <p>$60</p>
+                                                </div>
+                                            </div>
+                                            <div class="cart_product">
+                                                <div class="product__info">
+                                                    <div class="thumbn">
+                                                        <img th:src="@{/assest/template/images/capro2.jpg}" alt="cart product thumbnail"/>
+                                                    </div>
+
+                                                    <div class="info">
+                                                        <a class="title" href="single-product.html">Flounce - Multipurpose OpenCart Theme</a>
+                                                        <div class="cat">
+                                                            <a href="#">
+                                                                <img th:src="@{/assest/template/images/catword.png}" alt=""/>Wordpress
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="product__action">
+                                                    <a href="#">
+                                                        <span class="lnr lnr-trash"></span>
+                                                    </a>
+                                                    <p>$60</p>
+                                                </div>
+                                            </div>
+                                            <div class="total">
+                                                <p>
+                                                    <span>Total :</span>$80
+                                                </p>
+                                            </div>
+                                            <div class="cart_action">
+                                                <a class="go_cart" href="cart.html">View Cart</a>
+                                                <a class="go_checkout" href="checkout.html">Checkout</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pull-right join desktop-size d-md-block d-none">
+                            <a th:href="@{/auth/joinPage.do}" class="btn btn--round btn-secondary btn--xs">회원가입</a>
+                            <div th:if="${session.loggedIn}">
+                                <a th:href="@{/logout.do}" class="btn btn--round btn--xs">logout</a>
+                            </div>
+                            <div th:if="${session.loggedIn == null}">
+                                <a th:href="@{/auth/loginPage.do}" class="btn btn--round btn--xs">login</a>
+                            </div>
+                        </div>
+                        <div class="pull-right join mobile-size d-md-none d-flex">
+                            <a href="#" class="btn btn--round btn-secondary"><span class="lnr lnr-user"></span></a>
+                            <a href="#" class="btn btn--round"><span class="lnr lnr-enter"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mainmenu">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav class="navbar navbar-expand-md navbar-light mainmenu__menu">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                                aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNav">
+                            <ul class="navbar-nav">
+                                <li class="has_dropdown">
+                                    <a th:href="@{/index.html}">홈</a>
+                                    <div class="dropdowns dropdown--menu">
+                                        <ul>
+                                            <li>
+                                                <a href="https://github.com/ksuju/pofol_" target="_blank">포트폴리오 깃허브</a>
+                                            </li>
+                                            <li>
+                                                <a href="https://ksuju.tistory.com/" target="_blank">개발 블로그</a>
+                                            </li>
+                                            <li>
+                                                <a th:href="@{/etc.do}">이것저것</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+
+                                <li class="has_dropdown">
+                                    <a th:href="@{/forum/notice/listPage.do?bdTypeSeq=1}">게시판</a>
+                                    <div class="dropdowns dropdown--menu">
+                                        <ul>
+                                            <li>
+                                                <a th:href="@{/forum/notice/listPage.do?bdTypeSeq=1}">자유게시판</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a th:href="@{/contact.do}">이력서</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ================================ END MENU AREA ================================== -->
+</body>
+</th:block>
+</html>
