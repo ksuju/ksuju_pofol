@@ -33,13 +33,14 @@ public class EmailUtil {
 			messageHelper.setTo(email.getReceiver());
 			messageHelper.setFrom(emailProp.getUsername(),"ksuju");
 			messageHelper.setSubject(email.getSubject()); // 메일제목은 생략이 가능하다
-
 			// messageHelper.setText(email.getText());
 			messageHelper.setText(email.getText(), isHtml);
-
+			
+			//mailSender.send(message);가 문제
 			mailSender.send(message);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println(e);
 			System.out.println("sendMail >>>> Exception 발생");
 			return "Error";

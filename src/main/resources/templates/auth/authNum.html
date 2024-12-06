@@ -10,7 +10,7 @@
                         <h5 class="title" style="color:red;" th:text="${alert}"></h5>
                         <h1 class="title">인증코드 입력</h1>
                     </div>
-                    <div th:switch="${empty idAuth}">
+                    <div th:switch="${idAuth == null}">
                         <!-- 비밀번호 찾기할때 -->
                         <div th:case="true">
                             <!-- form -->

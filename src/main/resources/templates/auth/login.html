@@ -18,13 +18,21 @@
                             <div class="login--form">
                                 <div class="form-group">
                                     <label for="user_name">아이디</label>
-                                    <input th:if="${saveId != null and saveId != ''}" th:value="${saveId}"
-                                           value="testid"
+                                    <!-- 제출용 -->
+                                    <input
+                                            value="testid"
+                                            id="user_name"
+                                            name="memberID"
+                                            type="text"
+                                            class="text_field"
+                                            placeholder="Enter your username..." />
+                                    <!--
+                                    <input th:value="${saveId}"
                                            id="user_name"
                                            name="memberID"
                                            type="text"
                                            class="text_field"
-                                           placeholder="Enter your username..." />
+                                           placeholder="Enter your username..." />-->
                                 </div>
 
                                 <div class="form-group">
