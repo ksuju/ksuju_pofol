@@ -41,7 +41,7 @@ dependencies {
 	implementation 'commons-fileupload:commons-fileupload:1.5'
 
 	// Jasypt for Encryption
-	implementation 'org.jasypt:jasypt-spring31:1.9.3'
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
 	// BCrypt for Password Encoding
 	implementation 'at.favre.lib:bcrypt:0.10.2'

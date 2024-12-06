@@ -88,12 +88,8 @@
                         </div>
                         <div class="pull-right join desktop-size d-md-block d-none">
                             <a th:href="@{/auth/joinPage.do}" class="btn btn--round btn-secondary btn--xs">회원가입</a>
-                            <div th:if="${session.loggedIn}">
-                                <a th:href="@{/logout.do}" class="btn btn--round btn--xs">logout</a>
-                            </div>
-                            <div th:if="${session.loggedIn == null}">
-                                <a th:href="@{/auth/loginPage.do}" class="btn btn--round btn--xs">login</a>
-                            </div>
+                            <a th:if="${session.loggedIn}" th:href="@{/logout.do}" class="btn btn--round btn--xs">logout</a>
+                            <a th:if="${session.loggedIn == null}" th:href="@{/auth/loginPage.do}" class="btn btn--round btn--xs">login</a>
                         </div>
                         <div class="pull-right join mobile-size d-md-none d-flex">
                             <a href="#" class="btn btn--round btn-secondary"><span class="lnr lnr-user"></span></a>

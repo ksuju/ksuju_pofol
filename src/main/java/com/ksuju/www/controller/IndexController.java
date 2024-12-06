@@ -1,6 +1,6 @@
 package com.ksuju.www.controller;
 
-/**
+/*
  * packageName    : com.ksuju.www.controller
  * fileName       : IndexController
  * author         : sungjun
@@ -18,6 +18,7 @@ import java.util.Map;
 
 import com.ksuju.www.service.IndexService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,11 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class IndexController {
+    @Value("${spring.mail.username}")
+    private String emailUsername;
+
+    @Value("${spring.mail.password}")
+    private String emailPassword;
 
     private final IndexService indexService;
 
@@ -44,6 +50,9 @@ public class IndexController {
         List<Map<String, String>> rssItems = indexService.blogRssAndParsing(rssUrl);
 
         model.addAttribute("rssItems", rssItems);
+
+        System.out.println("Email Username: " + emailUsername);
+        System.out.println("Email Password: " + emailPassword);
 
         return "basic/index";
     }
