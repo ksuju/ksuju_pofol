@@ -14,7 +14,7 @@
                         <!-- 비밀번호 찾기할때 -->
                         <div th:case="true">
                             <!-- form -->
-                            <form th:id="'resetPwForm_' + ${uniqueId}" th:action="@{/pf/auth/findpswd.do}" method="POST">
+                            <form th:id="'resetPwForm_' + ${uniqueId}" th:action="@{/auth/findpswd.do}" method="POST">
                                 <div class="wrapper">
                                     <label th:id="'input_pw_label_' + ${uniqueId}" th:for="input_pw" class="label_input">
                                         <input type="text" th:id="'input_pw_' + ${uniqueId}" name="authNum"

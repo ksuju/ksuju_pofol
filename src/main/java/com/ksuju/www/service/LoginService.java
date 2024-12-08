@@ -82,7 +82,9 @@ public class LoginService {
 		// System.out.println("encPasswd >>>>>>>>> " + encPasswd);
 		// System.out.println("result.verified >>>>>>> " + result.verified);
 
+		// wrapper 클래스 Long 사용 > NULL 반환 허용
 		long expireDtm = authRepository.getExpireDtm(params.get("email"));
+
 		long now = System.currentTimeMillis();
 
 		if (expireDtm > now) {

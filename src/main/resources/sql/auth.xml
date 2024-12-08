@@ -62,7 +62,7 @@
 		SELECT ma.expire_dtm FROM member_auth ma
 		JOIN member m
 		ON ma.member_seq = m.member_seq
-		WHERE m.email = #{email} ;
+		WHERE m.email = #{email};
 	</select>
 
 	<!-- email로 member_id 가져오기 (비밀번호 변경 시 사용) -->

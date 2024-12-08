@@ -31,11 +31,6 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class IndexController {
-    @Value("${spring.mail.username}")
-    private String emailUsername;
-
-    @Value("${spring.mail.password}")
-    private String emailPassword;
 
     private final IndexService indexService;
 
@@ -50,9 +45,6 @@ public class IndexController {
         List<Map<String, String>> rssItems = indexService.blogRssAndParsing(rssUrl);
 
         model.addAttribute("rssItems", rssItems);
-
-        System.out.println("Email Username: " + emailUsername);
-        System.out.println("Email Password: " + emailPassword);
 
         return "basic/index";
     }
