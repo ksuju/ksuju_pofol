@@ -82,10 +82,12 @@ public class AuthController {
 			@RequestParam String email,
 			Model model) {
 		model.addAttribute("key", Calendar.getInstance().getTimeInMillis());
-		
+
+		System.out.println("============= AuthController > findpswd =============");
+
 		//인증로직
 		boolean result = authService.authNum(authNum, email);
-		
+
 		if(result) {
 			model.addAttribute("email", email);
 			return "auth/passwordChange";

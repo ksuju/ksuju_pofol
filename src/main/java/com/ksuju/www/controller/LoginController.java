@@ -45,6 +45,8 @@ public class LoginController {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
 
+		System.out.println("========= LoginController > resetPw =========");
+
 		if (!params.isEmpty()) {
 			mv.setViewName("login/login");
 			if (isValidPassword(params.get("passwd"))) {
