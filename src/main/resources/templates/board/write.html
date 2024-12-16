@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/assest/template/css/trumbowyg.min.css}">
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            $('#trumbowyg-demo').trumbowyg({
+                lang: 'kr'
+            });
+        });
+    </script>
+</head>
+<body>
+<!--================================
+            START DASHBOARD AREA
+    =================================-->
+<section class="support_threads_area section--padding2">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="question-form cardify p-4">
+                    <form th:action="@{/forum/notice/createBoard.do}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="boardTypeSeq" th:value="${boardTypeSeq}" />
+                        <input type="hidden" name="memberId" th:value="${memberId}" />
+                        <div class="form-group">
+                            <div th:if="${not #strings.isEmpty(errorMsg)}">
+                                <h5 style="color: red;" th:text="${errorMsg}"></h5>
+                            </div>
+                            <label>제목</label>
+                            <input type="text" name="title" placeholder="Enter title here" required th:value="${title != null ? title : ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <div id="trumbowyg-demo" th:text="${content != null ? content : ''}"></div>
+                        </div>
+                        <div th:each="i : ${#numbers.sequence(1, 3)}" class="form-group">
+                            <div class="attachments">
+                                <label>Attachments</label>
+                                <label>
+                                    <span class="lnr lnr-paperclip"></span> Add File
+                                    <span>or Drop Files Here</span>
+                                    <input type="file" name="attFile" style="display: inline-block;">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn--md btn-primary">Submit Request</button>
+                            <a th:href="@{/forum/notice/listPage.do(bdTypeSeq=${boardTypeSeq})}" class="btn btn--md btn-light">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                <!-- ends: .question-form -->
+            </div>
+            <!-- end .col-md-12 -->
+        </div>
+        <!-- end .row -->
+    </div>
+    <!-- end .container -->
+</section>
+<!--================================
+            END DASHBOARD AREA
+    =================================-->
+</body>
+</th:block>
+</html>

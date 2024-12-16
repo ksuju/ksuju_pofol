@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .commentIcon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .topFive {
+            display: flex;
+            flex-direction: column;
+            width: 44%;
+            border-right: 1px solid rgba(0, 0, 0, .1);
+        }
+
+        .topFive_title {
+            width: inherit;
+            margin-bottom: 10px;
+        }
+
+        .topFive_title img {
+            position: relative;
+            bottom: 2px;
+            margin-right: 5px;
+        }
+
+        .topFive_list img {
+            position: relative;
+            bottom: 2px;
+            margin-right: 5px;
+        }
+
+    </style>
+</head>
+<body>
+<section class="section--padding2">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div>
+                    <section class="topFive">
+                        <div class="topFive_title">
+                            <img class="commentIcon" th:src="@{/assest/template/images/crown.png}" alt="Crown"/>인기글
+                        </div>
+                        <ul>
+                            <li th:each="item : ${topFive}" class="topFive_list">
+                                &middot;&nbsp;
+                                <a th:href="@{/forum/notice/readPage.do(boardSeq=${item.board_seq}, boardTypeSeq=${item.board_type_seq})}">
+                                    <span th:text="${item.title}"></span>
+                                </a>
+                                <a class="topFive_like">
+                                    <img class="commentIcon" th:src="@{/assest/template/images/tbupup.png}" alt="Thumbs Up"/>
+                                    <span th:text="${item.like_count}"></span>
+                                </a>
+                            </li>
+                        </ul>
+                    </section>
+
+                    <div class="modules__content">
+                        <div class="withdraw_module withdraw_history">
+                            <div class="withdraw_table_header">
+                                <h3>자유게시판</h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table withdraw__table">
+                                    <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>제목</th>
+                                        <th>Date</th>
+                                        <th>작성자</th>
+                                        <th>좋아요</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="item, status : ${list}">
+                                        <td th:text="${totalCnt - (currentPage - 1) * 10 - status.index}"></td>
+                                        <td>
+                                            <a th:href="@{/forum/notice/readPage.do(boardSeq=${item.boardSeq}, boardTypeSeq=${item.boardTypeSeq})}">
+                                                <span th:text="${item.title}"></span>
+                                            </a>
+                                            <span th:if="${item.fileCount != 0}">
+                                                <img class="commentIcon" th:src="@{/assest/template/images/fileImg.png}" alt="File"/>
+                                                <span th:text="'(' + ${item.fileCount} + ')'"></span>
+                                            </span>
+                                            <span th:if="${item.commentCount != 0}">
+                                                <img class="commentIcon" th:src="@{/assest/template/images/cmtImg.png}" alt="Comment"/>
+                                                <span th:text="'(' + ${item.commentCount} + ')'"></span>
+                                            </span>
+                                        </td>
+                                        <td th:text="${item.regDtm}"></td>
+                                        <td th:text="${item.memberId}"></td>
+                                        <td th:text="${item.isLike}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div style="display: inline-block; margin: 0 5px; float: right; padding-right: 10px;">
+                                    <a th:href="@{/forum/notice/writePage.do(boardTypeSeq=${bdTypeSeq})}">
+                                        <button class="btn btn--round btn--bordered btn-sm btn-secondary">작성</button>
+                                    </a>
+                                </div>
+                                <div class="pagination-area" style="padding-top: 45px;">
+                                    <nav class="navigation pagination" role="navigation">
+                                        <div class="nav-links">
+                                            <a th:if="${hasPrev}" th:href="@{/forum/notice/listPage.do(bdTypeSeq=${bdTypeSeq}, page=${startPage - 10}, size=10)}" class="prev page-numbers">
+                                                <span class="lnr lnr-arrow-left"></span>
+                                            </a>
+                                            <th:block th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                                                <a th:if="${pageNum != currentPage}"
+                                                   th:href="@{/forum/notice/listPage.do(bdTypeSeq=${bdTypeSeq}, page=${pageNum}, size=10)}"
+                                                   th:text="${pageNum}"></a>
+                                                <span th:if="${pageNum == currentPage}" th:text="${pageNum}" class="current"></span>
+                                            </th:block>
+                                            <a th:if="${hasNext}" th:href="@{/forum/notice/listPage.do(bdTypeSeq=${bdTypeSeq}, page=${startPage + 10}, size=10)}" class="next page-numbers">
+                                                <span class="lnr lnr-arrow-right"></span>
+                                            </a>
+                                        </div>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function confirmDelete(memberId, boardTypeSeq, boardSeq) {
+            if (confirm("게시글을 삭제하시겠습니까?")) {
+                let url = /*[[@{/forum/notice/deleteBoard.do}]]*/ '/forum/notice/deleteBoard.do';
+                url += '?memberId=' + encodeURIComponent(memberId);
+                url += '&boardTypeSeq=' + encodeURIComponent(boardTypeSeq);
+                url += '&boardSeq=' + encodeURIComponent(boardSeq);
+                window.location.href = url;
+            }
+        }
+
+        function confirmUpdate(memberId, boardTypeSeq, boardSeq) {
+            if (confirm("게시글을 수정하시겠습니까?")) {
+                let url = /*[[@{/forum/notice/updatePage.do}]]*/ '/forum/notice/updatePage.do';
+                url += '?memberId=' + encodeURIComponent(memberId);
+                url += '&boardTypeSeq=' + encodeURIComponent(boardTypeSeq);
+                url += '&boardSeq=' + encodeURIComponent(boardSeq);
+                window.location.href = url;
+            }
+        }
+
+        window.onload = function () {
+            let errorMsg = /*[[${errorMsg}]]*/ '';
+            if (errorMsg && errorMsg.trim() !== '') {
+                alert(errorMsg);
+            } else {
+                console.log("list.html > 156, NULL")
+            }
+        }
+    </script>
+</section>
+</body>
+</th:block>
+</html>
