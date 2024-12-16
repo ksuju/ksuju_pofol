@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/assest/template/css/trumbowyg.min.css}">
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            $('#trumbowyg-demo').trumbowyg({
+                lang: 'kr'
+            });
+        });
+    </script>
+</head>
+<body>
+<!--================================
+            START DASHBOARD AREA
+=================================-->
+<section class="support_threads_area section--padding2">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="question-form cardify p-4">
+                    <form th:action="@{/forum/notice/updateBoard.do}" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="boardTypeSeq" th:value="${boardTypeSeq}" />
+                        <input type="hidden" name="boardSeq" th:value="${boardSeq}" />
+                        <input type="hidden" name="memberId" th:value="${memberId}" />
+
+                        <div class="form-group">
+                            <div th:if="${not #strings.isEmpty(errorMsg)}">
+                                <h5 style="color: red;" th:text="${errorMsg}"></h5>
+                            </div>
+                            <label>제목</label>
+                            <input type="text" name="title" placeholder="Enter title here" required th:value="${title}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <div id="trumbowyg-demo" th:text="${content}"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <div th:if="${fileList != null}">
+                                <div th:each="entry : ${fileList}">
+                                    <div th:if="${not #strings.isEmpty(entry)}">
+                                        <a href='javascript:void(0)'>
+                                            fileName="<span th:text="${entry.orgFileNm}"></span>"&nbsp;&nbsp;
+                                            fileSize="<span th:text="${entry.fileSize}"></span>"
+                                        </a>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <a id="deleteFile"
+                                           th:href="@{/deleteFile(attachSeq=${entry.attachSeq}, boardSeq=${boardSeq}, boardTypeSeq=${boardTypeSeq}, memberId=${memberId})}"
+                                           onclick="confirmDelete()">파일삭제</a>
+                                    </div>
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <!-- 목록 길이를 저장 -->
+                            <!-- 목록길이별로 파일첨부칸 추가 -->
+                            <div th:switch="${#lists.size(fileList)}">
+                                <div th:case="0">
+                                    <!-- Add 3 file upload fields -->
+                                    <div th:each="i : ${#numbers.sequence(0, 2)}">
+                                        <div class="form-group">
+                                            <div class="attachments">
+                                                <label>Attachments</label>
+                                                <label>
+                                                    <span class="lnr lnr-paperclip"></span> Add File
+                                                    <span>or Drop Files Here</span>
+                                                    <input type="file" name ="attFile" style="display:inline-block;">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:case="1">
+                                    <!-- Add 2 file upload fields -->
+                                    <div th:each="i : ${#numbers.sequence(0, 1)}">
+                                        <div class="form-group">
+                                            <div class="attachments">
+                                                <label>Attachments</label>
+                                                <label>
+                                                    <span class="lnr lnr-paperclip"></span> Add File
+                                                    <span>or Drop Files Here</span>
+                                                    <input type="file" name ="attFile" style="display:inline-block;">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:case="2">
+                                    <!-- Add 1 file upload field -->
+                                    <div class="form-group">
+                                        <div class="attachments">
+                                            <label>Attachments</label>
+                                            <label>
+                                                <span class="lnr lnr-paperclip"></span> Add File
+                                                <span>or Drop Files Here</span>
+                                                <input type="file" name ="attFile" style="display:inline-block;">
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- If list length is 3, no additional fields -->
+                            </div>
+                            <!-- 목록길이별로 파일첨부칸 추가 끝-->
+                        </div>
+
+                        <!-- Submit and Cancel Buttons -->
+                        <div class="form-group">
+                            <button type="submit" class="btn btn--md btn-primary">Submit Request</button>
+                            <a th:href="@{/forum/notice/listPage.do(bdTypeSeq=${boardTypeSeq})}"
+                               class="btn btn--md btn-light">Cancel</a>
+                        </div>
+
+                    </form>
+                </div><!-- ends: .question-form -->
+            </div><!-- end .col-md-12 -->
+        </div><!-- end .row -->
+    </div><!-- end .container -->
+</section><!--================================
+            END DASHBOARD AREA
+=================================-->
+</body>
+</th:block>
+</html>

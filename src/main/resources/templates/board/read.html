@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <title>Forum Detail</title>
+    <link rel="stylesheet" th:href="@{/assest/template/css/trumbowyg.min.css}">
+    <style>
+        .panel {
+            background-color: white;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+        .panel.active {
+            max-height: 300px;
+            opacity: 1;
+        }
+        .commentButton {
+            width: 45px;
+            height: 25px;
+            line-height: 10px;
+            text-align: center;
+            font-size: 15px;
+            background-color: rgba(0, 0, 0, 0);
+            color: #007bff;
+            border-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<section class="support_threads_area section--padding2">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="forum_detail_area">
+                    <div class="cardify forum--issue">
+                        <div class="title_vote clearfix">
+                            <h3 th:text="${title}"></h3>
+                            <span th:if="${logInUser eq memberId}">
+                                <a href="javascript:void(0)"
+                                   style="border:1px solid; padding:2px 4px; border-radius:10%"
+                                   th:attr="data-member-id=${memberId}, data-board-type-seq=${boardTypeSeq}, data-board-seq=${boardSeq}"
+                                   onclick="confirmUpdate(this)">수정</a>
+                                <a href="javascript:void(0)"
+                                   style="border:1px solid; padding:2px 4px; border-radius:10%"
+                                   th:attr="data-member-id=${memberId}, data-board-type-seq=${boardTypeSeq}, data-board-seq=${boardSeq}"
+                                   onclick="confirmDelete(this)">삭제</a>
+                            </span>
+                            <div class="vote">
+                                <a href="#" id='cThumbUpAnchor'
+                                   th:onclick="'thumbUpDown(' + ${boardSeq} + ',' + ${boardTypeSeq} + ', \'Y\')'"
+                                   th:classappend="${isLike eq 'Y'} ? 'active' : ''">
+                                    <span class="lnr lnr-thumbs-up"></span>
+                                </a>
+                                <a href="#" id='cThubDownAnchor'
+                                   th:onclick="'thumbUpDown(' + ${boardSeq} + ',' + ${boardTypeSeq} + ', \'N\')'"
+                                   th:classappend="${isLike eq 'N'} ? 'active' : ''">
+                                    <span class="lnr lnr-thumbs-down"></span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Post Content -->
+                        <div class="suppot_query_tag">
+                            <img class="poster_avatar" th:src="@{/assest/template/images/support_avat1.png}" alt="Support Avatar">
+                            <span th:text="${memberId}"></span>
+                            <span th:text="${regDtm}"></span>
+                        </div>
+                        <p style="margin-bottom: 0; margin-top: 19px;" th:text="${content}"></p>
+
+                        <!-- Attachments -->
+                        <h1 th:text="${attachSeq}"></h1>
+                        <div th:if="${fileList != null}">
+                            <div th:each="entry : ${fileList}">
+                                <div th:if="${entry != null}">
+                                    <a th:href="@{'download.do?attachSeq=' + ${entry.attachSeq}}">
+                                        fileName="<span th:text="${entry.orgFileNm}"></span>"
+                                        fileSize="<span th:text="${entry.fileSize}"></span>"
+                                    </a><br/>
+                                </div>
+                            </div>
+                            <!-- 전체 다운로드 -->
+                            <a href="#" id="downAllButton"
+                               th:if="${#lists.size(fileList) > 1}"
+                               th:href="@{'downloadAll.do?boardSeq=' + ${boardSeq} + '&boardTypeSeq=' + ${boardTypeSeq}}">전체다운로드</a>
+                        </div>
+
+                        <!-- Comments Section -->
+                        <div class="forum--replays cardify">
+                            <h4><span th:text="${#lists.size(comments)}"></span> Replies</h4>
+
+                            <!-- Comments List -->
+                            <div th:each="comment, status : ${comments}">
+                                <!-- Single Comment -->
+                                <div class="forum_single_reply">
+                                    <!-- Comment Content -->
+                                    ...
+                                </div>
+
+                                <!-- Edit Comment Form -->
+                                ...
+                            </div>
+
+                            <!-- Add Comment Form -->
+                            ...
+                        </div> <!-- End Comments Section -->
+                    </div> <!-- End Forum Issue -->
+                </div> <!-- End Forum Detail Area -->
+            </div> <!-- End Col -->
+        </div> <!-- End Row -->
+    </div> <!-- End Container -->
+</section>
+
+<script th:inline="javascript">
+    function addComment(boardSeq, boardTypeSeq) {
+        let url = /*[[@{/forum/notice/reply.do}]]*/ '/forum/notice/reply.do';
+        $.ajax({
+            type: 'POST',
+            url: url,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            dataType: 'JSON',
+            data: JSON.stringify({
+                boardSeq: boardSeq,
+                boardTypeSeq: boardTypeSeq,
+                content: $('#trumbowyg-demo').trumbowyg('html')
+            }),
+            success: function(result) {
+                if (result == 1) {
+                    window.location.reload();
+                } else {
+                    alert('실패!');
+                }
+            },
+            error: function(request, status, error) {
+                console.log(error)
+            }
+        });
+    }
+
+    function thumbUpDown(boardSeq, boardTypeSeq, isLike) {
+        let url = /*[[@{/forum/notice/thumbUpDown.do}]]*/ '/forum/notice/thumbUpDown.do';
+        url += '?boardSeq=' + boardSeq;
+        url += '&boardTypeSeq=' + boardTypeSeq;
+        url += '&isLike=' + isLike;
+        $.ajax({
+            type: 'GET',
+            url: url,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            dataType: 'text',
+            success: function(result) {
+                console.log(result)
+            },
+            error: function(request, status, error) {
+                console.log(error)
+            }
+        });
+    }
+
+    function commentIsLike(boardSeq, boardTypeSeq, cmtIsLike, commentSeq) {
+        let url = /*[[@{/forum/notice/commentIsLike.do}]]*/ '/forum/notice/commentIsLike.do';
+        url += '?boardSeq=' + boardSeq;
+        url += '&boardTypeSeq=' + boardTypeSeq;
+        url += '&cmtIsLike=' + cmtIsLike;
+        url += '&commentSeq=' + commentSeq;
+        $.ajax({
+            type: 'GET',
+            url: url,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            dataType: 'text',
+            success: function(result) {
+                console.log(result)
+            },
+            error: function(request, status, error) {
+                console.log(error)
+            }
+        });
+    }
+
+    function confirmDelete(element) {
+        var memberId = element.getAttribute('data-member-id');
+        var boardTypeSeq = element.getAttribute('data-board-type-seq');
+        var boardSeq = element.getAttribute('data-board-seq');
+
+        if (confirm("게시글을 삭제하시겠습니까?")) {
+            let url = '/forum/notice/deleteBoard.do';
+            url += '?memberId=' + encodeURIComponent(memberId);
+            url += '&boardTypeSeq=' + encodeURIComponent(boardTypeSeq);
+            url += '&boardSeq=' + encodeURIComponent(boardSeq);
+            window.location.href = url;
+        }
+    }
+
+    function confirmUpdate(element) {
+        var memberId = element.getAttribute('data-member-id');
+        var boardTypeSeq = element.getAttribute('data-board-type-seq');
+        var boardSeq = element.getAttribute('data-board-seq');
+
+        if (confirm("게시글을 수정하시겠습니까?")) {
+            let url = '/forum/notice/updatePage.do';
+            url += '?memberId=' + encodeURIComponent(memberId);
+            url += '&boardTypeSeq=' + encodeURIComponent(boardTypeSeq);
+            url += '&boardSeq=' + encodeURIComponent(boardSeq);
+            window.location.href = url;
+        }
+    }
+
+    function editToggle(commentSeq) {
+        var panel = document.querySelector('.panel-' + commentSeq);
+        panel.classList.toggle('active');
+    }
+
+    window.onload = function() {
+        var elements = document.querySelectorAll('.cmtEditToggle');
+        elements.forEach(function(element) {
+            element.addEventListener('click', function() {
+                editToggle(this.getAttribute('data-commentSeq'));
+            });
+        });
+    };
+</script>
+</body>
+</th:block>
+</html>
