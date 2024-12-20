@@ -1,5 +1,6 @@
 package com.ksuju.www.controller;
 
+import com.ksuju.www.config.FileDownloadHandler;
 import com.ksuju.www.dto.*;
 import com.ksuju.www.message.MessageEnum;
 import com.ksuju.www.service.BoardService;
@@ -50,6 +51,8 @@ public class BoardController {
     private final BoardService boardService;
 
     private final CommentService commentService;
+
+    private final FileDownloadHandler fileDownloadHandler;
 
     // 게시글 좋아요 or 싫어요
     @RequestMapping("/forum/notice/thumbUpDown.do")
@@ -135,7 +138,7 @@ public class BoardController {
         fileInfo.put("orgFileNm", dto.getOrgFileNm());
         model.addAttribute("fileInfo", fileInfo);
 
-        return "fileDownloadView";
+        return "fileDownloadHandler";
     }
 
     // 게시글 수정
