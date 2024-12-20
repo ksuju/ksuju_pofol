@@ -75,7 +75,7 @@
                         <div th:if="${fileList != null}">
                             <div th:each="entry : ${fileList}">
                                 <div th:if="${entry != null}">
-                                    <a th:href="@{'download.do?attachSeq=' + ${entry.attachSeq}}">
+                                    <a th:href="@{'/forum/notice/download.do?attachSeq=' + ${entry.attachSeq}}">
                                         fileName="<span th:text="${entry.orgFileNm}"></span>"
                                         fileSize="<span th:text="${entry.fileSize}"></span>"
                                     </a><br/>
@@ -84,7 +84,7 @@
                             <!-- 전체 다운로드 -->
                             <a href="#" id="downAllButton"
                                th:if="${#lists.size(fileList) > 1}"
-                               th:href="@{'downloadAll.do?boardSeq=' + ${boardSeq} + '&boardTypeSeq=' + ${boardTypeSeq}}">전체다운로드</a>
+                               th:href="@{'/forum/notice/downloadAll.do?boardSeq=' + ${boardSeq} + '&boardTypeSeq=' + ${boardTypeSeq}}">전체다운로드</a>
                         </div>
 
                         <!-- Comments Section -->
