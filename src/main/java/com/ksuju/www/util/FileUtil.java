@@ -7,13 +7,14 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.fileupload.FileUploadException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileUtil {
-	
+
 	// 업로드 용량 제한
 	private static final long MAX_FILE_SIZE_BYTES = 1024 * 1024; // 1MB
 	
@@ -24,11 +25,24 @@ public class FileUtil {
     String nowTime = sdf.format(now);
 	
     //@Value("#conis('file.save.path'")
-	private String SAVE_PATH = "/home/ec2-user/files/"+nowTime;
-	
+	//private String SAVE_PATH = "/home/ec2-user/files/"+nowTime;	> 기존 파일 경로 코드
+	//private String SAVE_PATH = System.getProperty("user.home") + "/files/" + nowTime;
+	private final String SAVE_PATH;
+
+	// 생성자에서 OS에 맞는 경로를 설정
+	public FileUtil() {
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.contains("win")) {
+			// 로컬 환경 (Windows)
+			SAVE_PATH = "C:/home/ec2-user/files/" + nowTime;
+		} else {
+			// 서버 환경 (Linux)
+			SAVE_PATH = "/home/ec2-user/files/" + nowTime;
+		}
+	}
+
 	public File saveFile(MultipartFile mf) throws FileUploadException {
 		System.out.println("==================== FileUtil>saveFile 진입 ====================");
-		
 		File destFile = new File(SAVE_PATH);
 		
 	    // 파일이 저장될 디렉토리가 없으면 생성
@@ -52,7 +66,7 @@ public class FileUtil {
 		    }
 		    
 			destFile = new File(SAVE_PATH, UUID.randomUUID().toString().replaceAll("-", ""));
-			
+
 			mf.transferTo(destFile);
 			
 			return destFile;

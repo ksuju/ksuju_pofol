@@ -229,7 +229,7 @@ public class BoardService {
 
     // 게시글 읽어오기
     public HashMap<String, Object> getReadBoard(int boardSeq, int boardTypeSeq) {
-        System.out.println("============getReadBoard > boardInfo=================");
+        System.out.println("============ getReadBoard > boardInfo =================");
         HashMap<String, Object> boardInfo = new HashMap<String, Object>();
 
         boardInfo = selectBoard(boardSeq, boardTypeSeq);
