@@ -430,7 +430,7 @@ public class BoardController {
     public ModelAndView contactView() {
         ModelAndView mv = new ModelAndView();
         mv.addObject("key", Calendar.getInstance().getTimeInMillis());
-        mv.setViewName("auth/contact");
+        mv.setViewName("util/contact");
 
         return mv;
     }
