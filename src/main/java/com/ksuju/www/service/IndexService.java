@@ -76,7 +76,6 @@ public class IndexService {
 	}
 	
     private static String getElementContent(Element parent, String tagName) {
-        logger.info("getElementContent");
         NodeList nodeList = parent.getElementsByTagName(tagName);
         if (nodeList.getLength() > 0) {
             return nodeList.item(0).getTextContent();
