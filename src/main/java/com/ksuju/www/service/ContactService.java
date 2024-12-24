@@ -16,6 +16,8 @@ import com.ksuju.www.dto.EmailDto;
 import com.ksuju.www.dto.ResumeDto;
 import com.ksuju.www.repository.ResumeRepository;
 import com.ksuju.www.util.EmailUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -23,12 +25,14 @@ import lombok.RequiredArgsConstructor;
 @Service("contactService")
 @RequiredArgsConstructor
 public class ContactService {
+    private final static Logger logger = LoggerFactory.getLogger(ContactService.class);
 
     private final ResumeRepository resumeRepository;
 
     private final EmailUtil emailUtil;
 
     public boolean sendResume(String name, String email) {
+        logger.info("sendResume");
 
         try {
             // 인증 메일 발송

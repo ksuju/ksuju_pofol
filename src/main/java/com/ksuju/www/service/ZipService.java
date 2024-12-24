@@ -16,10 +16,13 @@ import java.util.zip.ZipOutputStream;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ZipService {
+    private final static Logger logger = LoggerFactory.getLogger(ZipService.class);
 
     // 압축파일경로설정
     // 날짜출력형식 지정
@@ -33,6 +36,7 @@ public class ZipService {
 
     // fileNames는 원래 파일 이름 , filePaths는 파일이 저장되어있는 경로
     public void createZip(List<String> fileNames, List<String> filePaths) throws IOException {
+        logger.info("createZip");
         File destZip = new File(CHECK_PATH);
         // 경로가 없으면 생성
         if (!destZip.exists()) {
@@ -71,14 +75,14 @@ public class ZipService {
                     // 이 파일 이름을 처리된 것으로 표시
                     processedFiles.add(originalName);
                 } else {
-                    System.err.println("파일을 찾을 수 없습니다: " + sourceFile);
+                    logger.info("파일을 찾을 수 없습니다: " + sourceFile);
                 }
             }
         }
     }
 
     public void downloadZip(HttpServletResponse response) throws IOException {
-
+        logger.info("downloadZip");
         //사용자가 전체다운로드 받았을때 다운받은 zip파일의 이름 설정
         /*
          * String downloadFileName = "downAll";
@@ -103,15 +107,16 @@ public class ZipService {
     }
 
     public void deleteZip() {
+        logger.info("deleteZip");
         File file = new File(SAVE_PATH);
         if (file.exists()) {
             if (file.delete()) {
-                System.out.println("downAll.zip파일이 성공적으로 삭제되었습니다.");
+                logger.info("downAll.zip파일이 성공적으로 삭제되었습니다.");
             } else {
-                System.err.println("downAll.zip파일 삭제 실패.");
+                logger.info("downAll.zip파일 삭제 실패.");
             }
         } else {
-            System.err.println("downAll.zip파일이 존재하지 않습니다.");
+            logger.info("downAll.zip파일이 존재하지 않습니다.");
         }
     }
 }

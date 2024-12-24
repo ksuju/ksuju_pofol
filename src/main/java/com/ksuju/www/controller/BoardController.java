@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.fileupload.FileUploadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,6 +48,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BoardController {
 
+    private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
+
     private final ZipService zipService;
 
     private final BoardService boardService;
@@ -60,7 +64,7 @@ public class BoardController {
     public int thumbUpDown(@RequestParam("boardSeq") int boardSeq, @RequestParam("boardTypeSeq") int boardTypeSeq,
                            @RequestParam("isLike") String isLike,
                            HttpServletRequest request) {
-        System.out.println("======================= BoardController > thumbUpDown =======================");
+        logger.info("thumbUpDown");
 
         HttpSession session = request.getSession();
         String logInUser = (String)session.getAttribute("logInUser");
@@ -70,7 +74,7 @@ public class BoardController {
         try {
             memberSeq = boardService.getMemberSeq(logInUser);
         } catch (NullPointerException nep) {
-            System.out.println("사용자 없음");
+            logger.info("사용자 없음");
             // exception 던지거나 로그인 페이지로
         }
         BoardLikeDto boardLikeDto = new BoardLikeDto();
@@ -109,7 +113,7 @@ public class BoardController {
     public void downloadAll(Model model, @RequestParam Integer boardSeq, @RequestParam Integer boardTypeSeq,
                             HttpServletResponse response) {
 
-        System.out.println("============ BoardController > downloadAll.do 진입 ============");
+        logger.info("downloadAll.do");
 
         HashMap<String, Object> boardInfo = boardService.getReadBoard(boardSeq, boardTypeSeq);
 
@@ -147,7 +151,7 @@ public class BoardController {
                               @RequestParam(value = "attFile", required = false) MultipartFile[] attFiles,
                               RedirectAttributes redirectAttributes) throws FileUploadException {
 
-        System.out.println("======= BoardController > updateBoard =======");
+        logger.info("updateBoard.do");
 
         int boardTypeSeq = Integer.parseInt(params.get("boardTypeSeq"));
         int boardSeq = Integer.parseInt(params.get("boardSeq"));
@@ -175,7 +179,7 @@ public class BoardController {
         mv.addObject("key", Calendar.getInstance().getTimeInMillis());
         mv.setViewName("board/update");
 
-        System.out.println("======= BoardController > updatePage =======");
+        logger.info("updatePage.do");
 
         int boardSeq = Integer.parseInt((String)params.get("boardSeq"));
         int boardTypeSeq = Integer.parseInt((String)params.get("boardTypeSeq"));
@@ -204,7 +208,7 @@ public class BoardController {
                               @RequestParam(value = "attFile", required = false) MultipartFile[] attFiles,
                               RedirectAttributes redirectAttributes) throws FileUploadException {
 
-        System.out.println("======= BoardController > createBoard =======");
+        logger.info("createBoard.do");
 
         String boardTypeSeq = (String) params.get("boardTypeSeq");
 
@@ -245,10 +249,10 @@ public class BoardController {
     // 게시글 list 불러오기
     @RequestMapping("/forum/notice/listPage.do")
     public ModelAndView listPage(@RequestParam HashMap<String, String> params, HttpServletRequest request) {
-        System.out.println("======= BoardController > listPage =======");
-
+        logger.info("listPage.do");
         ModelAndView mv = new ModelAndView();
         mv.addObject("key", Calendar.getInstance().getTimeInMillis());
+        HttpSession session = request.getSession();
 
         setDefaultParams(params);
         mv.addObject("bdTypeSeq", params.get("bdTypeSeq"));
@@ -276,7 +280,9 @@ public class BoardController {
             mv.addObject("email", getEmail);
             return mv;
         } else if ("guest".equals(authYN)) {
+            String redirectUrl = (String)session.getAttribute("filterUri");
             mv.setViewName("auth/login");
+            mv.addObject("redirectUrl", redirectUrl);
             mv.addObject("alert", "로그인이 필요합니다.");
             return mv;
         }
@@ -363,7 +369,7 @@ public class BoardController {
                                   ServletRequest request,
                                   Model model) {
 
-        System.out.println("========================= writePage.do =========================");
+        logger.info("writePage.do");
 
         ModelAndView mv = new ModelAndView();
         mv.addObject("key", Calendar.getInstance().getTimeInMillis());
@@ -391,7 +397,7 @@ public class BoardController {
         mv.addObject("key", Calendar.getInstance().getTimeInMillis());
         mv.setViewName("board/read");
 
-        System.out.println("========= BoardController > readPage =========");
+        logger.info("readPage.do");
 
         int boardSeq = Integer.parseInt(params.get("boardSeq"));
         int boardTypeSeq = Integer.parseInt(params.get("boardTypeSeq"));
@@ -443,7 +449,7 @@ public class BoardController {
                              @RequestParam("cmtIsLike") String cmtIsLike,
                              @RequestParam("commentSeq") int commentSeq,
                              HttpServletRequest request) {
-        System.out.println("======================= BoardController > commentIsLike =======================");
+        logger.info("commentIsLike.do");
 
         HttpSession session = request.getSession();
         String logInUser = (String)session.getAttribute("logInUser");
@@ -453,7 +459,7 @@ public class BoardController {
         try {
             memberSeq = boardService.getMemberSeq(logInUser);
         } catch (NullPointerException nep) {
-            System.out.println("사용자 없음");
+            logger.info("사용자 없음");
             // exception 던지거나 로그인 페이지로
         }
         CommentLikeDto commentLikeDto = new CommentLikeDto();
@@ -477,7 +483,7 @@ public class BoardController {
     // 댓글삭제
     @RequestMapping("/forum/notice/deleteComment.do")
     public String deleteComment(@RequestParam HashMap<String, Object> params) {
-        System.out.println("======================= BoardController > deleteComment =======================");
+        logger.info("deleteComment.do");
 
         commentService.deleteComment(params);
 
@@ -489,7 +495,7 @@ public class BoardController {
     // 댓글수정
     @RequestMapping("/forum/notice/updateComment.do")
     public String updateComment(@RequestParam HashMap<String, Object> params) {
-        System.out.println("======================= BoardController > updateComment =======================");
+        logger.info("updateComment.do");
 
         commentService.updateComments(params);
 
@@ -503,7 +509,7 @@ public class BoardController {
     @RequestMapping("/forum/notice/reply.do")
     @ResponseBody
     public int addComment(@RequestBody BoardCommentDto dto, HttpServletRequest request) {
-        System.out.println("======================= BoardController > reply.do =======================");
+        logger.info("reply.do");
 
         if (commentService.addComment(dto, request) == 1) {
             return 1;

@@ -8,6 +8,8 @@ import com.ksuju.www.message.MessageEnum;
 import com.ksuju.www.service.AuthService;
 import com.ksuju.www.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
+
+	private static Logger logger = LoggerFactory.getLogger(AuthController.class);
 	
 	private final LoginService loginService;
 
@@ -30,7 +34,7 @@ public class AuthController {
 			@RequestParam String email
 	,Model model) {
 		
-		System.out.println("sendID=================================");
+		logger.info("sendID.do");
 
 		model.addAttribute("key", Calendar.getInstance().getTimeInMillis());
 
@@ -83,7 +87,7 @@ public class AuthController {
 			Model model) {
 		model.addAttribute("key", Calendar.getInstance().getTimeInMillis());
 
-		System.out.println("============= AuthController > findpswd =============");
+		logger.info("findpswd.do");
 
 		//인증로직
 		boolean result = authService.authNum(authNum, email);
@@ -104,7 +108,7 @@ public class AuthController {
 			,Model model) {
 
 		model.addAttribute("key", Calendar.getInstance().getTimeInMillis());
-		System.out.println("====================convertPw controller 진입====================");
+		logger.info("convertPw.do");
 		
 		// db에 저장된 유저아이디와 입력받은 유저아이디 비교
 		if(email.isEmpty() || name.isEmpty()) {

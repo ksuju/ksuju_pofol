@@ -6,6 +6,8 @@ import jakarta.activation.DataSource;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class EmailUtil {
-	
+	private final static Logger logger = LoggerFactory.getLogger(EmailUtil.class);
 	private final JavaMailSender mailSender;
 	private final EmailProp emailProp;
 	
@@ -23,6 +25,7 @@ public class EmailUtil {
 	 */
 	
 	public String sendMail(EmailDto email) {
+		logger.info("sendMail");
 		return sendMail(email, false);
 	}
 
@@ -41,14 +44,14 @@ public class EmailUtil {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println(e);
-			System.out.println("sendMail >>>> Exception 발생");
+			logger.error("sendMail >>>> Exception 발생 : ", e);
 			return "Error";
 		}
 		return "Sucess";
 	}
 
 	public void sendResume(EmailDto email, boolean isHtml) {
+		logger.info("sendResume");
 		try {
 			MimeMessage message = mailSender.createMimeMessage();
 			MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
@@ -68,7 +71,7 @@ public class EmailUtil {
 			mailSender.send(message);
 
 		} catch (Exception e) {
-			System.out.println(e);
+			logger.error("sendResume >>>> Exception 발생 : ", e);
 		}
 	}
 }

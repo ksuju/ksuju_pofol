@@ -18,6 +18,8 @@ import java.util.Map;
 
 import com.ksuju.www.service.IndexService;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,12 +36,14 @@ public class IndexController {
 
     private final IndexService indexService;
 
+    private final static Logger logger = LoggerFactory.getLogger(IndexController.class);
+
     // 인덱스페이지
     @RequestMapping("/pf/index.do")
     public String index(@RequestParam HashMap<String, String> params
     , HttpSession session
     , Model model) throws Exception {
-        System.out.println("================ IndexContoller 진입 ================");
+        logger.info("index.do");
         String rssUrl = "https://ksuju.tistory.com/rss";
 
         List<Map<String, String>> rssItems = indexService.blogRssAndParsing(rssUrl);

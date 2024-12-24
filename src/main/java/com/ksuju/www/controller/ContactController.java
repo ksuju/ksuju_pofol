@@ -3,6 +3,8 @@ package com.ksuju.www.controller;
 import java.util.Calendar;
 
 import com.ksuju.www.service.ContactService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,12 +17,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ContactController {
 
+    private final static Logger logger = LoggerFactory.getLogger(ContactController.class);
+
     private final ContactService contactService;
 
     @RequestMapping("resume.do")
     public ModelAndView sendResume(@RequestParam String name,
                                    @RequestParam String email) {
-        System.out.println("========= ContactController > resume =========");
+        logger.info("resume.do");
         ModelAndView mv = new ModelAndView();
         mv.addObject("key", Calendar.getInstance().getTimeInMillis());
         mv.setViewName("util/contact");
@@ -41,11 +45,11 @@ public class ContactController {
         boolean result = contactService.sendResume(name, email);
 
         if(result) {
-            System.out.println("이력서 전송에 성공했습니다.");
+            logger.info("이력서 전송에 성공했습니다.");
             mv.addObject("success","이력서 전송에 성공했습니다!");
             return mv;
         } else {
-            System.out.println("이력서 전송에 실패했습니다.");
+            logger.info("이력서 전송에 실패했습니다.");
             return mv;
         }
     }
