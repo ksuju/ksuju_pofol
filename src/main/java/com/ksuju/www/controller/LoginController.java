@@ -7,12 +7,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+import com.ksuju.www.filter.LoginFilter;
 import com.ksuju.www.message.MessageEnum;
 import com.ksuju.www.service.LoginService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor
 public class LoginController {
-
+	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	private final LoginService loginService;
 	
 	// 아이디찾기 페이지로 이동 & 아이디 변경
@@ -45,7 +48,7 @@ public class LoginController {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
 
-		System.out.println("========= LoginController > resetPw =========");
+		logger.info("resetPw.do");
 
 		if (!params.isEmpty()) {
 			mv.setViewName("login/login");
@@ -72,7 +75,7 @@ public class LoginController {
 	@RequestMapping("/logout.do")
 	public String logout(HttpServletRequest request) {
 
-		System.out.println("==================logout진입==================");
+		logger.info("logout.do");
 		// 세션 무효화
 		request.getSession().invalidate();
 
@@ -84,8 +87,8 @@ public class LoginController {
 			, HttpServletRequest request
 			, HttpServletResponse response
 			, Model model) {
-		
-		System.out.println("======== LoginController > login.do ========");
+
+		logger.info("login.do");
 		
 		String memberId = params.get("memberID");
 		
@@ -105,10 +108,8 @@ public class LoginController {
 	    ));
 
 	    if (loginCheck == Integer.parseInt(MessageEnum.SUCCESS.getCode())) {
-
 	        // 비밀번호가 일치하는 경우
 	        String redirectUrl = params.get("redirectUrl"); // redirectUrl을 HashMap에서 가져오기
-
 	        if (redirectUrl != null && !redirectUrl.isEmpty()) {
 	            // 리다이렉트 URL에서 마지막 경로만 비교
 	            String lastPath = redirectUrl.substring(redirectUrl.lastIndexOf("/") + 1);
@@ -123,7 +124,7 @@ public class LoginController {
 		
 		// 비밀번호가 일치하지 않는 경우
 		// 로그인 실패 처리
-		System.out.println("로그인실패==========================");
+		logger.info("로그인실패");
 		// 쿠키삭제
 		deleteCookie(request);
 		model.addAttribute("errorMessage", MessageEnum.LOGIN_FAILD.getDescription());
@@ -133,16 +134,13 @@ public class LoginController {
 	@RequestMapping("/auth/loginPage.do")
 	public ModelAndView loginPage(@RequestParam HashMap<String, String> params
 			, HttpServletRequest request) {
-		System.out.println("========================== LoginController > loginPage ========================");
+		logger.info("loginPage.do");
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("key", Calendar.getInstance().getTimeInMillis());
 
 		HttpSession session = request.getSession();
 
-		/*
-		헤더 로그인 버튼 여러번 누른 후 로그인시
-		인덱스로 이동하지 않고 로그인페이지에 남아있는 버그 수정
-		*/
+		// 로그인 상태인 경우 로그인 페이지 진입 막기
 		Boolean isLogin = (Boolean) session.getAttribute("loggedIn");
 		if(isLogin != null && isLogin) {
 			mv.setViewName("basic/index");
@@ -151,19 +149,15 @@ public class LoginController {
 
 		// 아이디저장 쿠키가 존재하면 request에 saveId라는 이름으로 저장됨
 		existCookie(request);
-        // request에 설정된 속성을 ModelAndView에 추가
         String saveId = (String) request.getAttribute("saveId");
         mv.addObject("saveId", saveId);
-        
-        String referer = request.getHeader("Referer"); // 이전 URL 가져오기
 
-        System.out.println("====== referer ============== referer =================");
-        
-        if (referer == null || referer.isEmpty()) {
-            referer = "/pf/index.do"; // 기본 페이지 설정
-        }
-
-        mv.addObject("redirectUrl", referer); // redirect url
+		// 리다이렉트 URL 설정 (필터에서 저장된 값 사용)
+		String redirectUrl = (String)session.getAttribute("filterUri");
+		if (redirectUrl == null || redirectUrl.isEmpty()) {
+			redirectUrl = "/pf/index.do"; // 기본 페이지 설정
+		}
+        mv.addObject("redirectUrl", redirectUrl); // redirect url
 
 		mv.setViewName("login/login");
 		return mv;
@@ -203,7 +197,7 @@ public class LoginController {
 	                	response.addCookie(cookie); // 응답에 쿠키 추가
 		                break;
 	                } catch (NullPointerException ne) {
-	                	System.out.println("============쿠키삭제 null============");
+						logger.info("쿠키삭제 null");
 	                }
 	            }
 	        }

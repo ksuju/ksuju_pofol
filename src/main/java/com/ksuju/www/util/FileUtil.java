@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.fileupload.FileUploadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -14,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class FileUtil {
-
+	private final static Logger logger = LoggerFactory.getLogger(FileUtil.class);
 	// 업로드 용량 제한
-	private static final long MAX_FILE_SIZE_BYTES = 1024 * 1024; // 1MB
+	private final static long MAX_FILE_SIZE_BYTES = 1024 * 1024; // 1MB
 	
 	// 날짜출력형식 지정
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -31,6 +33,7 @@ public class FileUtil {
 
 	// 생성자에서 OS에 맞는 경로를 설정
 	public FileUtil() {
+		logger.info("FileUtil");
 		String os = System.getProperty("os.name").toLowerCase();
 		if (os.contains("win")) {
 			// 로컬 환경 (Windows)
@@ -42,7 +45,7 @@ public class FileUtil {
 	}
 
 	public File saveFile(MultipartFile mf) throws FileUploadException {
-		System.out.println("==================== FileUtil>saveFile 진입 ====================");
+		logger.info("saveFile");
 		File destFile = new File(SAVE_PATH);
 		
 	    // 파일이 저장될 디렉토리가 없으면 생성
@@ -55,13 +58,13 @@ public class FileUtil {
 			long getByte = mf.getSize();
 			
 			if(getByte > MAX_FILE_SIZE_BYTES) {
-				System.out.println("파일의 크기는 1MB를 넘을 수 없습니다.");
+				logger.info("파일의 크기는 1MB를 넘을 수 없습니다.");
 		        throw new MaxUploadSizeExceededException(MAX_FILE_SIZE_BYTES);
 			}
 			
 			// 업로드된 파일이 없거나 파일 업로드 칸이 비어 있는 경우 빈 파일이 저장되지 않도록 방지
 		    if(mf == null || mf.isEmpty()) {
-		        System.out.println("업로드된 파일이 없거나 비어 있습니다.");
+				logger.info("업로드된 파일이 없거나 비어 있습니다.");
 		        throw new NullPointerException();
 		    }
 		    

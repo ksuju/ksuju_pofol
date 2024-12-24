@@ -4,6 +4,8 @@ import com.ksuju.www.dto.EmailAuthDto;
 import com.ksuju.www.message.MessageEnum;
 import com.ksuju.www.service.JoinService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 @Controller
 @RequiredArgsConstructor
 public class JoinController {
+    private final static Logger logger = LoggerFactory.getLogger(JoinController.class);
 
     private final JoinService joinService;
 
@@ -35,7 +38,7 @@ public class JoinController {
 		model.addAttribute("key", Calendar.getInstance().getTimeInMillis());
         model.addAttribute("MessageEnum", MessageEnum.class);
 
-        System.out.println("==============================JoinController > joinPage.do진입==============================");
+        logger.info("joinPage.do");
         return "auth/join";
     }
 
@@ -43,7 +46,7 @@ public class JoinController {
     @RequestMapping("emailAuth.do")
     public String emailAuth(@RequestParam HashMap<String, String> params
     , Model model) {
-        System.out.println("====================emailAuth진입====================" + params);
+        logger.info("emailAuth.do");
         model.addAttribute("key", Calendar.getInstance().getTimeInMillis());
         // params.value (authURI)와 db에서 불러온 authURI를 비교해야함
         if (joinService.authURI(params.get("uri")) != null) {
@@ -51,11 +54,11 @@ public class JoinController {
 
             // 트랜잭션으로 auth_yn 업데이트
             if (joinService.updateAuthAndMemAuth(emailAuthDto)) {
-                System.out.println("인증성공");
+                logger.info("인증성공");
                 return "auth/login";
             }
         }
-        System.out.println("인증실패");
+        logger.info("인증실패");
         return "basic/index";
     }
 
@@ -63,7 +66,7 @@ public class JoinController {
     @ResponseBody
     @RequestMapping("/auth/validPasswd.do")
     public int validPasswd(@RequestParam String passwordCheck) {
-        System.out.println("==============================JoinController > passCheck.do진입==============================");
+        logger.info("passCheck.do");
         return joinService.validPasswd(passwordCheck);
     }
 
@@ -71,7 +74,7 @@ public class JoinController {
     @ResponseBody
     @RequestMapping("/auth/passCheck.do")
     public int passCheck(@RequestParam String conPassCheck, @RequestParam String passwordCheck) {
-        System.out.println("==============================JoinController > passCheck.do진입==============================");
+        logger.info("passCheck.do");
 
         return joinService.passCheck(conPassCheck, passwordCheck);
     }
@@ -80,17 +83,17 @@ public class JoinController {
     @ResponseBody
     @RequestMapping("/auth/idCheck.do")
     public int idCheck(@RequestParam String idCheck) {
-        System.out.println("==============================JoinController > idCheck.do진입==============================");
+        logger.info("idCheck.do");
         int idCheckCode = joinService.idCheck(idCheck);
 
         // 유효한 아이디
         if (idCheckCode == Integer.parseInt(MessageEnum.DUPL_ID.getCode())) {
-            System.out.println("controller > idCheck > 아이디중복");
-            System.out.println("==============================JoinController > idCheck.do종료==============================");
+            logger.info("idCheck > 아이디 중복");
+            logger.info("idCheck.do 종료");
             return idCheckCode;
         } else {
-            System.out.println("controller > idCheck > 아이디중복없음");
-            System.out.println("==============================JoinController > idCheck.do종료==============================");
+            logger.info("idCheck > 아이디 중복 없음");
+            logger.info("idCheck.do 종료");
             return idCheckCode;
         }
     }
@@ -100,18 +103,14 @@ public class JoinController {
     @RequestMapping("/auth/join.do")
     public String join(@RequestParam HashMap<String, String> params) {
 
-        System.out.println("==============================JoinController > join.do진입==============================");
-
-        System.out.println("params 값 확인 ==================>" + params);
-
-        // System.out.println("join params 확인 ========================>"+params);
+        logger.info("join.do");
 
         // 모든 조건을 통과한 경우 회원가입 진행
         int joinCheck = joinService.joinMember(params);
 
         if (joinCheck == 1) {
-            System.out.println("=====================회원가입 성공 확인=====================");
-            System.out.println("==============================JoinController > join.do종료==============================");
+            logger.info("회원가입 성공");
+            logger.info("join.do");
             return MessageEnum.SUCCESS.getCode();
         } else if (joinCheck == Integer.parseInt(MessageEnum.VALLID_USER_NAME.getCode())) {
             // 유효하지 않은 아이디.
@@ -126,8 +125,8 @@ public class JoinController {
             // 이미 가입된 이메일 주소입니다.
             return MessageEnum.DUPL_EMAIL.getCode();
         } else {
-            System.out.println("=====================회원가입 실패 확인=====================");
-            System.out.println("==============================JoinController > join.do종료==============================");
+            logger.info("회원가입 실패");
+            logger.info("join.do 종료");
             return MessageEnum.FAILED.getCode();
         }
     }

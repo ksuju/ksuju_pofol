@@ -14,6 +14,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import com.ksuju.www.repository.EtcRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,13 +26,14 @@ import lombok.RequiredArgsConstructor;
 @Service("indexService")
 @RequiredArgsConstructor
 public class IndexService {
+    private final static Logger logger = LoggerFactory.getLogger(IndexService.class);
 
 	private final EtcRepository etcRepository;
 
 	// 내 블로그 RSS 가져오기 및 파싱, 서버에서 RSS가져온 뒤 파싱해서 View에 뿌려줌
 	public List<Map<String,String>> blogRssAndParsing(String urlString) throws Exception {
-		
-		System.out.println("========================= blogRssAndParsing 진입 =========================");
+
+        logger.info("blogRssAndParsing");
 		
         List<Map<String, String>> items = new ArrayList<>();
         
@@ -82,6 +85,7 @@ public class IndexService {
 
 	// 특정 카테고리 식사메뉴 가져오기
 	public String getMenu(String category) {
+        logger.info("getMenu");
 
 		List<String> menu = etcRepository.menu(category);
 		double random = Math.random();
@@ -94,11 +98,13 @@ public class IndexService {
 
 	// 모든 식사메뉴 카테고리 가져오기
 	public List<String> menuCategory() {
-		return etcRepository.menuCategory();
+        logger.info("menuCategory");
+        return etcRepository.menuCategory();
 	}
 
 	// 모든 식사메뉴 가져오기
 	public String allMenu() {
+        logger.info("allMenu");
 
 		List<String> allMenu = etcRepository.allMenu();
 

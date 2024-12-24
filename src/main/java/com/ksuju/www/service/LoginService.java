@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.apache.ibatis.binding.BindingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class LoginService {
+	private final static Logger logger = LoggerFactory.getLogger(LoginService.class);
 
 	private final JoinRepository joinRepository;
 	
@@ -37,8 +40,8 @@ public class LoginService {
 	// 비밀번호 찾기 할 때 입력한 아이디와 이메일로부터 가져온 db에 있는 아이디 비교
 	public boolean compareID(String email, String name) {
 		String dbMemberID = authRepository.compareID(email);
-		
-		System.out.println("============== LoginService > compareID ===============");
+
+		logger.info("compareID");
 		
 		if(!dbMemberID.isEmpty() && dbMemberID.equals(name)) {
 			return true;
@@ -48,6 +51,7 @@ public class LoginService {
 	
 	// 아이디 저장 쿠키 생성
 	public boolean saveIdCookie(HashMap<String, String> params, HttpServletResponse response) {
+		logger.info("saveIdCookie");
 		String memberId = params.get("memberID");
 
 		// on 또는 null
@@ -76,6 +80,7 @@ public class LoginService {
 	
 	// 비밀번호 변경
 	public int changePasswd(HashMap<String, String> params) {
+		logger.info("changePasswd");
 		// BCrypt를 사용한 비밀번호 암호화
 		String passwd = params.get("passwd");
 		String encPasswd = BCrypt.withDefaults().hashToString(12, passwd.toCharArray());
@@ -103,6 +108,7 @@ public class LoginService {
 
 	// 비밀번호 변경을 위한 메일 인증 완료
 	public int emailAuthPw(HashMap<String, String> params) {
+		logger.info("emailAuthPw");
 		int dbAuthNum = authRepository.authNumSelect(params.get("email"));
 		String authNumString = params.get("authNum");
 		int authNum = 0;
@@ -123,6 +129,7 @@ public class LoginService {
 
 	// 인증번호 생성 및 메일 발송
 	public int updateAuthNum(HashMap<String, String> params) {
+		logger.info("updateAuthNum");
 		int cnt = authRepository.updateAuthNum(params);
 		int emailExist = joinRepository.emailCount(params.get("email"));
 		
@@ -159,7 +166,7 @@ public class LoginService {
 	public int loginCheck(String memberID, String passwd, HttpServletRequest request) {
 		String dbPasswd = loginRepository.loginCheck(memberID);
 		//String getAuthYN = noticeRepository.getAuthYN(memberID);
-		System.out.println("================ LoginService > loginCheck 진입 ================");
+		logger.info("loginCheck");
 		
 		//if (dbPasswd != null && ("Y").equals(getAuthYN)) {	
 		if (dbPasswd != null) {	
@@ -185,7 +192,7 @@ public class LoginService {
 				return Integer.parseInt(MessageEnum.SUCCESS.getCode());
 			}
 		} else {
-			System.out.println("================== 가입되지 않은 아이디 ==================");
+			logger.info("가입되지 않은 아이디");
 			return -1;
 		}
 		/*

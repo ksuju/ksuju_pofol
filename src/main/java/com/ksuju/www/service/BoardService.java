@@ -14,6 +14,8 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.fileupload.FileUploadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BoardService {
+    private final static Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     private final CommentRepository commentRepository;
 
@@ -42,16 +45,19 @@ public class BoardService {
 
     // 작성중이던 글 내용 가져오기
     public HashMap<String, Object> getSave(int memberSeq, int boardTypeSeq) {
+        logger.info("getSave");
         return boardRepository.getSave(memberSeq, boardTypeSeq);
     }
 
     // 아이디로 email 가져오기
     public String getEmail(String memberID) {
+        logger.info("getEmail");
         return memberRepository.getEmail(memberID);
     }
 
     // 아이디 인증번호 생성 및 인증메일 발송
     public int updateAuthNum(HashMap<String, String> params) {
+        logger.info("updateAuthNum");
 
         String memberID = params.get("logInUser");
         String dbEmail = memberRepository.getEmail(memberID);
@@ -63,8 +69,6 @@ public class BoardService {
         String putAuthNum = authNum+"";
 
         params.put("authNum", putAuthNum);
-
-        System.out.println("alkdnsalkdnasd====>"+params);
 
         int cnt = authRepository.updateAuthNum(params);
         int emailExist = joinRepository.emailCount(params.get("email"));
@@ -91,7 +95,7 @@ public class BoardService {
 
     // 아이디 인증여부 가져오기
     public String getAuthYN(String memberID) {
-
+        logger.info("getAuthYN");
         if(memberID.equals("guest")) {
             return "guest";
         } else {
@@ -102,6 +106,7 @@ public class BoardService {
 
     // 좋아요 수 가져오기
     public List<Integer> like(List<BoardDto> list, HashMap<String, String> params) {
+        logger.info("like");
         Integer bdTypeSeq = Integer.parseInt(params.get("bdTypeSeq"));
         List<Integer> likes = new ArrayList<>();
 
@@ -115,6 +120,7 @@ public class BoardService {
 
     // 좋아요 여부 가져오기
     public Map<Integer, String> getIsLikeMap(Integer memberSeq, List<Integer> boardSeqs, int boardTypeSeq) {
+        logger.info("getIsLikeMap");
         List<Map<String, Object>> isLikeList = boardRepository.selectIsLikeList(memberSeq, boardSeqs, boardTypeSeq);
 
         // Map 변환
@@ -129,27 +135,31 @@ public class BoardService {
 
     // 게시글 좋아요 Y or N 셀렉트
     public String selectIsLike(int memberSeq, int boardSeq, int boardTypeSeq) {
+        logger.info("selectIsLike");
         return boardRepository.selectIsLike(memberSeq, boardSeq, boardTypeSeq);
     }
 
     // 게시글 좋아요 Y or N
     public int thumbUpDownCvt(BoardLikeDto boardLikeDto) {
+        logger.info("thumbUpDownCvt");
         return boardRepository.thumbUpDownCvt(boardLikeDto);
     }
 
     // 게시글 좋아요
     public int thumbUpDown(BoardLikeDto boardLikeDto) {
+        logger.info("thumbUpDown");
         return boardRepository.thumbUpDown(boardLikeDto);
     }
 
     // member_seq 가져오기
     public Integer getMemberSeq(String memberId) {
+        logger.info("getMemberSeq");
         return joinRepository.getMemberSeq(memberId);
     }
 
     // 수정페이지 파일 개별 삭제
     public boolean deleteFile(@RequestParam HashMap<String, Object> params) {
-
+        logger.info("deleteFile");
         int attachSeq = Integer.parseInt((String)params.get("attachSeq"));
         int boardSeq = Integer.parseInt((String)params.get("boardSeq"));
         int boardTypeSeq = Integer.parseInt((String)params.get("boardTypeSeq"));
@@ -159,13 +169,14 @@ public class BoardService {
 
     // attach_seq로 첨부파일 정보 가져오기
     public BoardAttachDto getDownloadFileInfo(int attachSeq) {
+        logger.info("getDownloadFileInfo");
         return boardRepository.getAttachInfo(attachSeq);
     }
 
     // 게시글 수정
     public int updateBoard(HashMap<String, String> params, ServletRequest request, MultipartFile[] attFiles) throws FileUploadException {
 
-        System.out.println("======= NoticeService > updateBoard =======");
+        logger.info("updateBoard");
         File destFile = null;
 
         int boardSeq = Integer.parseInt((String)params.get("boardSeq"));
@@ -229,7 +240,7 @@ public class BoardService {
 
     // 게시글 읽어오기
     public HashMap<String, Object> getReadBoard(int boardSeq, int boardTypeSeq) {
-        System.out.println("============ getReadBoard > boardInfo =================");
+        logger.info("boardInfo");
         HashMap<String, Object> boardInfo = new HashMap<String, Object>();
 
         boardInfo = selectBoard(boardSeq, boardTypeSeq);
@@ -276,13 +287,14 @@ public class BoardService {
 
     // 게시글 하나만 가져오기
     public HashMap<String, Object> selectBoard(int boardSeq, int boardTypeSeq) {
+        logger.info("selectBoard");
         return boardRepository.selectBoard(boardSeq, boardTypeSeq);
     }
 
     // 게시글 작성
     @Transactional
     public String boardCreate(HashMap<String, Object> params, ServletRequest request, MultipartFile[] attFiles) throws FileUploadException {
-        System.out.println("=========================== service > boardCreate ===========================");
+        logger.info("boardCreate");
 
         File destFile = null;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -345,7 +357,7 @@ public class BoardService {
 
     // 게시글 삭제하기
     public void boardDelete(String memberId, int boardTypeSeq, int boardSeq) {
-        System.out.println("=========================== service > boardDelete ===========================");
+        logger.info("boardDelete");
         boardRepository.deleteBoardAttach(boardTypeSeq, boardSeq); // 첨부파일 삭제
         commentRepository.deleteAllComment(boardTypeSeq, boardSeq); // 댓글 삭제
         boardRepository.boardDelete(memberId, boardTypeSeq, boardSeq);
@@ -355,6 +367,7 @@ public class BoardService {
     // 게시판 내 게시글 불러오기
 
     public List<BoardDto> getList(HashMap<String, Integer> params) {
+        logger.info("getList");
         List<BoardDto> getList = boardRepository.getList(params);
         int boardTypeSeq = params.get("bdTypeSeq");
 
@@ -404,16 +417,19 @@ public class BoardService {
 
     // 게시판 내 총 게시글 수
     public int totalCnt(int bdTypeSeq) {
+        logger.info("totalCnt");
         return boardRepository.totalCnt(bdTypeSeq);
     }
 
     // 게시판 내 인기글 top5 가져오기
     public List<Map<String, Integer>> getLikeTopFive(int boardTypeSeq) {
+        logger.info("getLikeTopFive");
         return boardRepository.getLikeTopFive(boardTypeSeq);
     }
 
     // 파일 업로드 사이즈 에러
     public String fileUploadSizeError(Integer memberSeq, Integer boardTypeSeq, String memberId) {
+        logger.info("fileUploadSizeError");
         // getSave {board_seq, title, content}
         HashMap<String, Object> getSave = this.getSave(memberSeq, boardTypeSeq);
         Integer boardSeq = (Integer) getSave.get("board_seq");

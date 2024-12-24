@@ -21,9 +21,13 @@ import java.util.List;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ObjectUtils;
 
 public class LoginFilter implements Filter {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoginFilter.class);
 
     // 로그인 필터가 적용될 URI 목록
     private final String[] LOGIN_REQUIRED_URI = {
@@ -48,6 +52,8 @@ public class LoginFilter implements Filter {
         List<String> UriList = new ArrayList<>(Arrays.asList(LOGIN_REQUIRED_URI));
         HttpSession session = req.getSession();
 
+        logger.info("Request URI: " + uri);
+
         // 로그인 여부 확인
         if (ObjectUtils.isEmpty(session.getAttribute("logInUser"))) {
             if (UriList.contains(uri)) {
@@ -55,14 +61,12 @@ public class LoginFilter implements Filter {
                 PrintWriter out = response.getWriter();
 
                 session.setAttribute("filterUri", uri); // 로그인 후 원래 요청 페이지로 돌아가기 위한 URI 저장
-
-                out.println("<script>alert('로그인 후 이용해주세요.'); location.href='" + req.getContextPath() + "/auth/loginPage.do';</script>");
-
                 return; // 로그인하지 않은 경우 요청을 차단하고 로그인 페이지로 리다이렉트
             }
         } else {
             // 로그인 상태인 경우, attribute를 설정하여 메뉴에 표시될 버튼 설정 > LoginService > loginCheck
             //session.setAttribute("loggedIn", true);
+            logger.info("Login Success");
         }
 
         // 필터 체인으로 요청을 전달
